@@ -43,6 +43,10 @@ export class CryptographyService {
     return data.subarray(12, 76);
   }
 
+  private extractSaltFromHmac(data: Buffer): Buffer {
+    return data.subarray(0, 16);
+  }
+
   private extractCipheredDEK(data: Buffer): Buffer {
     return data.subarray(0, 124);
   }
