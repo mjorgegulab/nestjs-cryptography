@@ -23,3 +23,10 @@ renovate.json
 
 # ci
 .circleci
+
+coverage
+
+test
+
+*.spec.*
+*.test.*
