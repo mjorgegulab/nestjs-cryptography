@@ -183,27 +183,37 @@ export class CryptographyService {
 
   public createCustomHmac(
     algorithm: string,
-    key: Buffer,
-    data: string,
+    key: string | Buffer,
+    data: string | Buffer,
+    options?: GenericOptionsInterface,
   ): Buffer {
-    const hmac = crypto.createHmac(algorithm, crypto.createSecretKey(key));
-    hmac.update(data);
+    const inputKey = this.convertInputData(key, options?.inputKeyEncoding);
+    const inputData = this.convertInputData(data, options?.inputDataEncoding);
+
+    const hmac = crypto.createHmac(algorithm, crypto.createSecretKey(inputKey));
+
+    hmac.update(inputData);
+
     key = null;
+
     return hmac.digest();
   }
 
   public verifyCustomHmac(
     algorithm: string,
-    key: Buffer,
-    data: string,
+    key: string | Buffer,
+    data: string | Buffer,
     oldHmac: string | Buffer,
+    options?: GenericOptionsInterface,
   ): boolean {
-    const hmac = this.createCustomHmac(algorithm, key, data);
-    if (Buffer.isBuffer(oldHmac)) {
-      return crypto.timingSafeEqual(hmac, oldHmac);
-    } else {
-      return crypto.timingSafeEqual(Buffer.from(oldHmac, 'hex'), hmac);
-    }
+    const inputOldHmacData = this.convertInputData(
+      oldHmac,
+      options?.inputDataEncoding,
+    );
+
+    const hmac = this.createCustomHmac(algorithm, key, data, options);
+
+    return crypto.timingSafeEqual(hmac, inputOldHmacData);
   }
 
   public createSecureHmac(data: string): Buffer {
