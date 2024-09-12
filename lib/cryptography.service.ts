@@ -2,16 +2,29 @@ import * as crypto from 'node:crypto';
 import * as argon2 from 'argon2';
 import { Inject, Injectable } from '@nestjs/common';
 import { MODULE_OPTIONS_TOKEN } from './cryptography.module-definition';
-import { CryptographyOptionsInterface } from './interfaces';
+import {
+  CryptographyOptionsInterface,
+  GenericOptionsInterface,
+} from './interfaces';
 
 @Injectable()
 export class CryptographyService {
   constructor(
-    @Inject(MODULE_OPTIONS_TOKEN) private options: CryptographyOptionsInterface,
+    @Inject(MODULE_OPTIONS_TOKEN)
+    private options: CryptographyOptionsInterface,
   ) {}
 
-  private convertDataToBuffer(data: string | Buffer) {
-    return Buffer.isBuffer(data) ? data : Buffer.from(data, 'hex');
+  private convertInputData(
+    data: string | Buffer,
+    inputEncoding?: BufferEncoding,
+  ) {
+    if (Buffer.isBuffer(data)) {
+      return data;
+    } else if (typeof data === 'string') {
+      return Buffer.from(data, inputEncoding ?? 'utf8');
+    } else {
+      throw new Error('Unsupported input type');
+    }
   }
 
   private extractIV(data: Buffer): Buffer {
