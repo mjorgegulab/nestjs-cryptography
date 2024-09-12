@@ -85,8 +85,8 @@ export class CryptographyService {
     });
   }
 
-  public genRandomPassword(length: number, encoding: 'base64' | 'hex'): string {
-    return crypto.randomBytes(length).toString(encoding).slice(0, length);
+  public genRandomPassword(length: number): string {
+    return crypto.randomBytes(length).toString('base64').slice(0, length);
   }
 
   public generateSymmetricKey(length: number = 256): crypto.KeyObject {
