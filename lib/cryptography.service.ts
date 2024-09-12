@@ -55,6 +55,18 @@ export class CryptographyService {
     return data.subarray(124, data.length);
   }
 
+  private createHmacSecureKey(key: Buffer, salt: Buffer): Buffer {
+    return Buffer.from(
+      crypto.hkdfSync(
+        'sha3-256',
+        crypto.createSecretKey(key),
+        salt,
+        Buffer.alloc(0),
+        64,
+      ),
+    );
+  }
+
   private createSaferRandomData(length: number): Buffer {
     return Buffer.from(
       crypto.hkdfSync(
@@ -65,10 +77,6 @@ export class CryptographyService {
         length,
       ),
     );
-  }
-
-  private generateKeyDEK() {
-    return crypto.createSecretKey(this.createSaferRandomData(32));
   }
 
   public genUUID(secure = false): string {
