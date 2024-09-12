@@ -216,47 +216,39 @@ export class CryptographyService {
     return crypto.timingSafeEqual(hmac, inputOldHmacData);
   }
 
-  public createSecureHmac(data: string): Buffer {
+  public createSecureHmac(
+    data: string | Buffer,
+    options?: GenericOptionsInterface,
+  ): Buffer {
     const key = Buffer.from(this.options.hashing.hmac.masterKey, 'hex');
 
     const salt = crypto.randomBytes(16);
-    const secureKey = Buffer.from(
-      crypto.hkdfSync(
-        'sha3-256',
-        crypto.createSecretKey(key),
-        salt,
-        Buffer.alloc(0),
-        64,
-      ),
-    );
-    const hmac = this.createCustomHmac('sha3-256', secureKey, data);
-    return Buffer.concat(
-      [Buffer.from(salt), Buffer.from(hmac)],
-      salt.length + hmac.length,
-    );
+
+    const secureKey = this.createHmacSecureKey(key, salt);
+
+    const hmac = this.createCustomHmac('sha3-256', secureKey, data, options);
+
+    return Buffer.concat([salt, hmac], salt.length + hmac.length);
   }
 
-  public verifySecureHmac(data: string, oldHmac: Buffer | string): boolean {
+  public verifySecureHmac(
+    data: string | Buffer,
+    oldHmac: string | Buffer,
+    options?: GenericOptionsInterface,
+  ): boolean {
     const key = Buffer.from(this.options.hashing.hmac.masterKey, 'hex');
 
-    const buffOldHmac = Buffer.isBuffer(oldHmac)
-      ? oldHmac
-      : Buffer.from(oldHmac, 'hex');
-
-    const saltOldHmac = buffOldHmac.subarray(0, 16);
+    const buffOldHmac = this.convertInputData(
+      oldHmac,
+      options?.inputDataEncoding,
+    );
+    const saltOldHmac = this.extractSaltFromHmac(buffOldHmac);
     const hashOldHmac = buffOldHmac.subarray(16, buffOldHmac.length);
 
-    const secureKey = Buffer.from(
-      crypto.hkdfSync(
-        'sha3-256',
-        crypto.createSecretKey(key),
-        saltOldHmac,
-        Buffer.alloc(0),
-        64,
-      ),
-    );
+    const secureKey = this.createHmacSecureKey(key, saltOldHmac);
 
-    const hmac = this.createCustomHmac('sha3-256', secureKey, data);
+    const hmac = this.createCustomHmac('sha3-256', secureKey, data, options);
+
     return crypto.timingSafeEqual(hmac, hashOldHmac);
   }
 
