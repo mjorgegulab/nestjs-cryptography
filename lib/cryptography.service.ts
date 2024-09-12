@@ -108,7 +108,7 @@ export class CryptographyService {
     });
   }
 
-  public async createArgonHashFromPassword(
+  public async createArgon2HashFromPassword(
     data: string | Buffer,
   ): Promise<Buffer> {
     const tmpData = await argon2.hash(data, {
@@ -121,7 +121,7 @@ export class CryptographyService {
     return Buffer.isBuffer(tmpData) ? tmpData : Buffer.from(tmpData);
   }
 
-  public async verifyArgonHashFromPassword(
+  public async verifyArgon2HashFromPassword(
     hash: string,
     data: string | Buffer,
   ): Promise<boolean> {
