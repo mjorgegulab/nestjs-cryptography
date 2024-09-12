@@ -20,6 +20,7 @@
     "prepublish": "yarn run build",
     "prepack": "yarn run build",
     "test": "jest",
+    "test:cov": "jest --coverage",
     "all": "yarn format && yarn lint && yarn test && yarn prepack"
   },
   "dependencies": {
@@ -74,7 +75,6 @@
     "collectCoverageFrom": [
       "**/*.service.ts"
     ],
-    "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   }
 }
