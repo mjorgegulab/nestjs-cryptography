@@ -252,18 +252,18 @@ export class CryptographyService {
     return crypto.timingSafeEqual(hmac, hashOldHmac);
   }
 
-  public createInsecureFastHash(data: string): Buffer {
-    return crypto.createHash('sha1').update(data).digest();
-  }
-
-  private async symmetricDataEncrypt(
+  public async symmetricDataEncrypt(
     data: string | Buffer,
     key: string | Buffer,
+    options?: GenericOptionsInterface,
   ): Promise<Buffer> {
+    const inputData = this.convertInputData(data, options?.inputDataEncoding);
+    const inputKey = this.convertInputData(key, options?.inputKeyEncoding);
+
     const iv = this.createSaferRandomData(12);
     const salt = this.createSaferRandomData(64);
 
-    const secureEncryptionKey = await this.deriveMasterKey(key, salt, 32);
+    const secureEncryptionKey = await this.deriveMasterKey(inputKey, salt, 32);
 
     const cipher = crypto.createCipheriv(
       'aes-256-gcm',
@@ -274,27 +274,27 @@ export class CryptographyService {
       },
     );
 
-    let cipheredData = cipher.update(data);
+    let cipheredData = cipher.update(inputData);
 
-    cipheredData = Buffer.concat([
-      Buffer.from(cipheredData),
-      Buffer.from(cipher.final()),
-    ]);
+    cipheredData = Buffer.concat([cipheredData, cipher.final()]);
 
     return Buffer.concat([iv, salt, cipher.getAuthTag(), cipheredData]);
   }
 
-  private async symmetricDataDecrypt(
+  public async symmetricDataDecrypt(
     data: string | Buffer,
     key: string | Buffer,
+    options?: GenericOptionsInterface,
   ): Promise<Buffer> {
-    data = Buffer.isBuffer(data) ? data : Buffer.from(data, 'hex');
-    const iv = this.extractIV(data);
-    const salt = this.extractSalt(data);
-    const authTag = this.extractAuthTagFromCypheredData(data);
-    const cipheredData = this.extractCipheredData(data);
+    const inputData = this.convertInputData(data, options?.inputDataEncoding);
+    const inputKey = this.convertInputData(key, options?.inputKeyEncoding);
 
-    const decryptionKey = await this.deriveMasterKey(key, salt, 32);
+    const iv = this.extractIV(inputData);
+    const salt = this.extractSalt(inputData);
+    const authTag = this.extractAuthTagFromCypheredData(inputData);
+    const cipheredData = this.extractCipheredData(inputData);
+
+    const decryptionKey = await this.deriveMasterKey(inputKey, salt, 32);
 
     const decipher = crypto.createDecipheriv(
       'aes-256-gcm',
@@ -309,10 +309,7 @@ export class CryptographyService {
 
     let decipheredData = decipher.update(cipheredData);
 
-    decipheredData = Buffer.concat([
-      Buffer.from(decipheredData),
-      Buffer.from(decipher.final()),
-    ]);
+    decipheredData = Buffer.concat([decipheredData, decipher.final()]);
 
     return decipheredData;
   }
