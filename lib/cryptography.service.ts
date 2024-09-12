@@ -160,16 +160,25 @@ export class CryptographyService {
     return crypto.timingSafeEqual(hash, inputOldHashData);
   }
 
-  public createSecureHash(data: string): Buffer {
-    return this.createCustomHash('shake256', data, 48);
+  public createSecureHash(
+    data: string | Buffer,
+    options?: GenericOptionsInterface,
+  ): Buffer {
+    return this.createCustomHash('shake256', data, {
+      ...options,
+      outputLength: 48,
+    });
   }
 
-  public verifySecureHash(data: string, oldHash: string | Buffer): boolean {
-    const hash = this.createCustomHash('shake256', data, 48);
-    const buffOldHash = Buffer.isBuffer(oldHash)
-      ? oldHash
-      : Buffer.from(oldHash, 'hex');
-    return crypto.timingSafeEqual(hash, buffOldHash);
+  public verifySecureHash(
+    data: string | Buffer,
+    oldHash: string | Buffer,
+    options?: GenericOptionsInterface,
+  ): boolean {
+    return this.verifyCustomHash('shake256', data, oldHash, {
+      ...options,
+      outputLength: 48,
+    });
   }
 
   public createCustomHmac(
