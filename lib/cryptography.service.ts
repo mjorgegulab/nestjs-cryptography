@@ -130,28 +130,34 @@ export class CryptographyService {
 
   public createCustomHash(
     algorithm: string,
-    data: string,
-    outputLength: number = 0,
+    data: string | Buffer,
+    options?: GenericOptionsInterface,
   ): Buffer {
+    const inputData = this.convertInputData(data, options?.inputDataEncoding);
+
     const hash = crypto.createHash(algorithm, {
-      ...(outputLength && { outputLength }),
+      ...(options?.outputLength && { outputLength: options?.outputLength }),
     });
-    hash.update(data);
+
+    hash.update(inputData);
+
     return hash.digest();
   }
 
   public verifyCustomHash(
     algorithm: string,
-    data: string,
+    data: string | Buffer,
     oldHash: string | Buffer,
-    outputLength: number = 0,
+    options?: GenericOptionsInterface,
   ): boolean {
-    const hash = this.createCustomHash(algorithm, data, outputLength);
-    if (Buffer.isBuffer(oldHash)) {
-      return crypto.timingSafeEqual(hash, oldHash);
-    } else {
-      return crypto.timingSafeEqual(Buffer.from(oldHash, 'hex'), hash);
-    }
+    const inputOldHashData = this.convertInputData(
+      oldHash,
+      options?.inputDataEncoding,
+    );
+
+    const hash = this.createCustomHash(algorithm, data, options);
+
+    return crypto.timingSafeEqual(hash, inputOldHashData);
   }
 
   public createSecureHash(data: string): Buffer {
