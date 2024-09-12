@@ -316,10 +316,11 @@ export class CryptographyService {
 
   public async symmetricSecureDataEncrypt(
     data: string | Buffer,
+    options?: GenericOptionsInterface,
   ): Promise<Buffer> {
     const dek = this.createSaferRandomData(32);
 
-    const cipheredData = await this.symmetricDataEncrypt(data, dek);
+    const cipheredData = await this.symmetricDataEncrypt(data, dek, options);
 
     const cipheredDek = await this.symmetricDataEncrypt(
       dek,
@@ -331,12 +332,13 @@ export class CryptographyService {
 
   public async symmetricSecureDataDecrypt(
     data: string | Buffer,
+    options?: GenericOptionsInterface,
   ): Promise<Buffer> {
-    data = Buffer.isBuffer(data) ? data : Buffer.from(data, 'hex');
+    const inputData = this.convertInputData(data, options?.inputDataEncoding);
 
-    const cipheredDek = this.extractCipheredDEK(data);
+    const cipheredDek = this.extractCipheredDEK(inputData);
 
-    const cipheredData = this.extractCipheredDataWithDEK(data);
+    const cipheredData = this.extractCipheredDataWithDEK(inputData);
 
     const decipheredDek = await this.symmetricDataDecrypt(
       cipheredDek,
