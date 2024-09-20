@@ -1,0 +1,32 @@
+name: Deploy WIKI prod
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./wiki
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'yarn'
+          cache-dependency-path: wiki/yarn.lock
+      - name: Install Netlify CLI
+        run: yarn global add netlify-cli
+      - name: Install deps
+        run: yarn install
+      - name: Build docusaurus
+        run: yarn build
+      - name: Deploy wiki
+        run: netlify deploy --dir=build --prod
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
