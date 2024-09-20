@@ -1,0 +1,133 @@
+---
+title: Generics
+sidebar_label: Generics
+sidebar_position: 1
+description: Methods to perform typical operations UUID, randomPassword, ...
+---
+
+import RequiredLabel from '@site/src/components/RequiredLabel';
+import Tips from '@site/src/common/tips.mdx'
+
+This section contains some generic methods to perform typical operations
+
+## Generate an UUIDv4
+
+Method to generate a UUID version 4.
+
+### `genUUID`
+
+```tsx
+public genUUID (
+  secure = false
+): string;
+```
+
+**Parameters:**
+
+| Name                    | Type    | Default | Description                                          |
+|-------------------------|---------|---------|------------------------------------------------------|
+| secure <RequiredLabel/> | boolean | false   | Decide to use a more secure generation using entropy |
+
+
+**Outputs:**
+
+As output, it will return a string of this format `0E928AD4-4D11-4C7C-A83A-8DD7361FFC01`
+
+
+**Usage:**
+```typescript
+async someAwesomeMethod(): Promise<string> {
+  const newUUID = this.cryptographyService.genUUID(true);
+  ...
+  return newUUID;
+}
+```
+
+## Generate random password
+
+Method to generate a random password with this set of characters:
+`a-z 0-9` if _**hex**_ used, or `A-Z a-z 0-9 + = /` if _**base64**_ used.
+
+### `genRandomPassword`
+
+```tsx
+public genRandomPassword (
+  length: number,
+  encoding: 'base64' | 'hex'
+): string;
+```
+
+**Parameters:**
+
+| Name                      | Type          | Default | Description                                      |
+|---------------------------|---------------|---------|--------------------------------------------------|
+| length <RequiredLabel/>   | number        |         | The password output length                       |
+| encoding <RequiredLabel/> | base64 \| hex |         | The password output format hexadecimal or base64 |
+
+
+**Outputs:**
+
+As output, it will return a string of this format:
+  - base64: `jh2EducrV7yH8tGAc8Jkdcso`
+  - hex: `b4da8e4aba39c9f70dde717d`
+
+**Usage:**
+```typescript
+async createUserPassword(): Promise<string> {
+  const newPassword = this.cryptographyService.genRandomPassword(24, 'base64');
+  ...
+  return newPassword;
+}
+```
+
+## Generate symmetric key
+
+Method to generate a cryptographically secure SymmetricKey in [KeyObject][1] format
+to use in subsequent encryption/decryption operations.
+
+### `generateSymmetricKey`
+
+```tsx
+public generateSymmetricKey (
+  length: number = 256
+): KeyObject;
+```
+
+**Parameters:**
+
+| Name   | Type   | Default | Description                     |
+|--------|--------|---------|---------------------------------|
+| length | number | 256     | The symmetric key output length |
+
+
+**Outputs:**
+
+As output, it will return an object of type [KeyObject][1].
+
+:::info
+ If you want to export this KeyObject to different types, you can access the `.export` [method][2]
+:::
+
+**Usage:**
+```typescript
+async createSymmetricKey(): Promise<void> {
+  const new32KeySize = this.cryptographyService.generateSymmetricKey(32);
+  console.log(new32KeySize.export().toString('hex'));  // f32.....4ee
+
+  const aes128KeySize = this.cryptographyService.generateSymmetricKey(128);
+  console.log(aes128KeySize.export().toString('hex'));  // e89.....41e
+
+  const aes192KeySize = this.cryptographyService.generateSymmetricKey(192);
+  console.log(aes192KeySize.export().toString('base64'));  // 8OI.....ZQ=
+
+  const aes256KeySize = this.cryptographyService.generateSymmetricKey(256);
+  console.log(aes256KeySize.export());  // <Buffer cc 2b.....cd a1 08>
+}
+```
+
+
+<Tips />
+
+
+[1]: https://nodejs.org/api/crypto.html#class-keyobject
+[2]: https://nodejs.org/api/crypto.html#keyobjectexportoptions

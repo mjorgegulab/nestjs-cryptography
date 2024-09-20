@@ -1,0 +1,30 @@
+---
+title: Create Secure HMAC
+sidebar_label: Create Secure HMAC
+sidebar_position: 1
+---
+
+In the following section, you will see a diagram of the cryptographic operations performed when calling the method [`createSecureHmac`][1]
+
+This method performs several cryptographic operations, including generating a salt,
+deriving a secure key using HKDF with the sha3-256 hashing algorithm, creating an HMAC,
+and returning the concatenated salt and HMAC result. The diagram will illustrate these steps clearly.
+
+<div style={{ textAlign: 'center' }}>
+  ```mermaid
+  graph TD
+      A[Input Data: data] --> B[Generate Master Key from Options]
+      B --> C[Generate Random Salt: 16 bytes]
+      C --> D[Use HKDF with sha3-256, Master Key, and Salt]
+      D --> E[Generate Secure Key: 64 bytes]
+      E --> F[Create HMAC with sha3-256, Secure Key, and Data]
+      F --> G[Concatenate Salt and HMAC]
+      G --> H[Return Combined Buffer: Salt + HMAC]
+
+      style B fill:#f9f,stroke:#333,stroke-width:2px
+      style D fill:#bbf,stroke:#333,stroke-width:2px
+      style F fill:#bfb,stroke:#333,stroke-width:2px
+  ```
+</div>
+
+[1]: /docs/guides/hmac#create-a-secure-hmac

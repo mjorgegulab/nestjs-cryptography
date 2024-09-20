@@ -1,0 +1,197 @@
+---
+title: Configuration Options
+sidebar_label: Configuration Options
+sidebar_position: 1
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import GenerateHexButton from '@site/src/components/GenerateHexButton';
+
+<details>
+  <summary>👨‍🔧 Let me help you a bit....</summary>
+
+  <div>
+
+    :::info
+
+    If at any point you need to securely generate a secret key for the following configuration, you can do so as follows.
+
+    <Tabs
+      defaultValue="linux"
+      values={[
+        { label: 'Linux / macOS', value: 'linux', },
+        { label: 'Windows / Others', value: 'windows', }
+      ]
+      }>
+      <TabItem value="linux">
+        Type this on the terminal:
+        ```bash
+        openssl rand -hex 32
+        ```
+      </TabItem>
+      <TabItem value="windows">
+        <GenerateHexButton />
+      </TabItem>
+    </Tabs>
+
+
+    :::
+
+  </div>
+</details>
+
+<details>
+  <summary>Example Usage</summary>
+
+  <div>
+
+```typescript title="app.module.ts"
+import { Module } from '@nestjs/common';
+import * as argon2 from 'argon2';
+import {
+  CryptographyModule,
+  CryptographyOptionsInterface,
+} from 'nestjs-cryptography';
+
+@Module({
+imports: [
+  CryptographyModule.registerAsync({
+    imports: [ConfigModule],
+    isGlobal: true,
+    useFactory: (configService: ConfigService) =>
+      ({
+        isGlobal: true,
+        kdf: {
+          timeCost: 32,
+          memoryCost: 131072,
+          argon2Type: argon2.argon2i,
+          defaultOutputKeyLength: 32,
+        },
+        hashing: {
+          password: {
+            timeCost: 10,
+            memoryCost: 65536,
+            argon2Type: argon2.argon2id,
+            outputKeyLength: 64,
+          },
+          hmac: {
+            // ‼️ change me please ‼️
+            masterKey: '6c0504d3836ab96a25daeb61c44f6d6345d99a746f6a776290c48d9a5ba8b124',
+          },
+        },
+        encryption: {
+          symmetric: {
+            // ‼️ change me please ‼️
+            masterKey: '1538755db39d3d98115af5be688b1486673910f7d2630fc48dd27c1a1ace2631',
+          },
+        },
+      }) as CryptographyOptionsInterface,
+      inject: [ConfigService],
+  }),
+],
+export class AppModule {}
+```
+
+  </div>
+</details>
+
+## `kdf`
+
+Settings for the Key Derivation Function.
+
+  - ### <u>defaultOutputKeyLength</u>
+      > `type: number` | **required**
+
+    The default length (in bytes) of the derived key.
+
+  - ### <u>argon2Type</u>
+      > `type: Argon2Type` | **required**
+
+    The variant of the Argon2 algorithm to use (Argon2d, Argon2i, or Argon2id)
+
+  - ### <u>memoryCost</u>
+      > `type: number` | **required**
+
+    Memory usage (in kilobytes) for the algorithm.
+
+  - ### <u>timeCost</u>
+      > `type: number` | **required**
+
+    Number of iterations to perform.
+
+---
+
+## `hashing`
+
+Settings for hashing operations.
+
+### `password`
+
+Configuration for password hashing.
+
+  - ### <u>outputKeyLength</u>
+      > `type: number` | **required**
+
+    The default length (in bytes) of the derived key.
+
+  - ### <u>argon2Type</u>
+      > `type: Argon2Type` | **required**
+
+    The variant of the Argon2 algorithm to use (Argon2d, Argon2i, or Argon2id)
+
+  - ### <u>memoryCost</u>
+      > `type: number` | **required**
+
+    Memory usage (in kilobytes) for the algorithm.
+
+  - ### <u>timeCost</u>
+      > `type: number` | **required**
+
+    Number of iterations to perform.
+
+### `hmac`
+
+Configuration for HMAC (Hash-Based Message Authentication Code).
+
+  - ### <u>masterKey</u>
+      > `type: string` | **required**
+
+    The secret key used for generating HMACs.
+
+---
+
+## `encryption`
+
+Settings for encryption operations.
+
+### `symmetric`
+
+Configuration for symmetric encryption.
+
+  - ### <u>masterKey</u>
+      > `type: string` | **required**
+
+    The secret key used for encryption and decryption.
+
+:::danger
+
+Note: Always ensure that secret keys are generated securely and stored safely.
+Do not hard-code them into your source files or expose them in version control systems.
+
+:::
+
+## Additional Information
+
+- **Argon2Type**: An enumeration defining the type of Argon2 algorithm to use.
+The options typically include `Argon2d`, `Argon2i`, and `Argon2id`.
+[Choose the one that best fits your security requirements][3].
+
+- **Security Considerations**: Adjust `memoryCost` and `timeCost`
+according to the desired balance between performance and security.
+Higher values increase security but require more resources.
+You could se more information on [owasp][1] or the [official specs][2]
+
+[1]: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#argon2id
+[2]: https://www.password-hashing.net/argon2-specs.pdf#page=15
+[3]: https://en.wikipedia.org/wiki/Argon2

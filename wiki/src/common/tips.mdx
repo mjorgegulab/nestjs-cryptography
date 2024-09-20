@@ -1,0 +1,18 @@
+## 🛟 Tips
+
+<details>
+  <summary>Remember that...</summary>
+  <div>
+    :::info
+    Remember that buffers could be transformed to `utf8, hex, base64, latin,...` using the `toString()` [method][1].
+    ```typescript
+    let passwordAsBuffer: Buffer = someMethodThatReturnsABuffer();
+
+    console.log(passwordAsBuffer.toString('hex')) // f32.....4ee
+    console.log(passwordAsBuffer.toString('base64')) // 8OI.....ZQ=
+    ```
+    :::
+  </div>
+</details>
+
+[1]: https://nodejs.org/api/buffer.html#buftostringencoding-start-end

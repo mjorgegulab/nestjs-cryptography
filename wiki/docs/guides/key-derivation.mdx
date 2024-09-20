@@ -1,0 +1,98 @@
+---
+title: Key Derivation
+sidebar_label: Key Derivation
+sidebar_position: 2
+description: Methods to use KDF (Key Derivation Function)
+---
+
+import RequiredLabel from '@site/src/components/RequiredLabel';
+import Tips from '@site/src/common/tips.mdx'
+
+
+The upcoming section will delve into methods for generating cryptographically secure keys from user-provided passwords.
+This process is crucial because raw passwords are often not secure enough for cryptographic purposes
+due to their relatively low entropy. By using a key derivation function, we can transform these passwords
+into secure keys that are suitable for encryption, hashing, or other cryptographic operations.
+
+We will be using **Argon2** for this purpose, which is one of the most secure and modern key derivation functions available.
+Argon2 is specifically designed to resist attacks such as brute force and side-channel attacks
+by incorporating memory-hard and CPU-intensive computations. This makes it an ideal choice for
+converting user passwords into robust cryptographic keys.
+
+
+
+## Derive a key
+
+Method to derive a user supplied key into a cryptographically secure one.
+
+### `deriveMasterKey`
+
+
+```typescript
+public deriveMasterKey (
+  masterKey: string | Buffer,
+  salt: Buffer,
+  length: number,
+): Promise<Buffer>;
+```
+
+
+#### **Parameters:**
+
+| Name                           | Type    | Default | Description                                         |
+|--------------------------------|---------|---------|-----------------------------------------------------|
+| **masterKey** <RequiredLabel/> | boolean | false   | MasterKey of password to derive                     |
+| **salt** <RequiredLabel/>      | Buffer  | false   | Salt to increase the security of the key derivation |
+| **length** <RequiredLabel/>    | number  | false   | The desired derived output key length               |
+
+
+#### **Module Parameters:**
+
+:::info
+Internally, this method uses certain parameters that are defined at the module level during initialization,
+as we have seen [previously][2]. The internal parameters used and their corresponding configuration keys are as follows:
+
+  - **hashLength**: Specifies the length of the resulting derived key.
+      This is set via [`kdf.defaultOutputKeyLength`][3] and determines the size of the final hash in bytes.
+
+  - **type**: Defines the variant of Argon2 to use (_argon2i_, _argon2d_, or _argon2id_).
+This is configured using [`kdf.argon2Type`][4].
+
+  - **memoryCost**: Sets the amount of memory (in KB) that the algorithm will use during the hashing process.
+This value is determined by [`kdf.memoryCost`][5] and plays a critical role in resisting brute-force attacks.
+
+  - **timeCost**: Specifies the number of iterations or the amount of computational work Argon2 will perform.
+It is defined via [`kdf.timeCost`][6] to ensure a balance between security and performance.
+:::
+
+
+#### **Outputs:**
+
+As output, it will return a [Buffer][1] `<Buffer cc 2b.....cd a1 08>`
+
+
+#### **Usage:**
+```typescript
+async deriveSecureKeyFromMasterKey(
+  key: string,
+): Promise<string> {
+  const keyBuffer = Buffer.from(key, 'utf-8');
+  const salt = this.cryptographyService.generateSymmetricKey(128);
+  const derivedKey = await this.cryptographyService.deriveMasterKey(keyBuffer, salt.export(), 256)
+  return derivedKey.toString('hex')
+}
+```
+
+
+
+
+<Tips />
+
+[1]: https://nodejs.org/api/buffer.html
+
+[2]: /docs/intro#configuration
+
+[3]: /docs/api-reference/settings#defaultoutputkeylength
+[4]: /docs/api-reference/settings#argon2type
+[5]: /docs/api-reference/settings#memorycost
+[6]: /docs/api-reference/settings#timecost
