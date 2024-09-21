@@ -8,7 +8,10 @@
   "license": "MIT",
   "description": "Secure NestJS cryptography module 🔐",
   "homepage": "https://github.com/mjorgegulab/nestjs-cryptography",
-  "repository": "github:mjorgegulab/nestjs-cryptography",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mjorgegulab/nestjs-cryptography.git"
+  },
   "bugs": {
     "url": "https://github.com/mjorgegulab/nestjs-cryptography/issues"
   },
