@@ -1,5 +1,5 @@
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
+import { themes as prismThemes } from 'prism-react-renderer';
+import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
@@ -27,8 +27,8 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          editUrl:
-            'https://github.com/mjorgegulab/nestjs-cryptography',
+          editUrl: 'https://github.com/mjorgegulab/nestjs-cryptography',
+          lastVersion: 'current',
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -104,7 +104,7 @@ const config: Config = {
             {
               label: 'Stack Overflow',
               href: 'https://stackoverflow.com/questions/tagged/nestjs',
-            }
+            },
           ],
         },
         {
@@ -125,7 +125,7 @@ const config: Config = {
       defaultLanguage: 'typescript',
     },
     mermaid: {
-      theme: {dark: 'neutral'},
+      theme: { dark: 'neutral' },
     },
   } satisfies Preset.ThemeConfig,
 };

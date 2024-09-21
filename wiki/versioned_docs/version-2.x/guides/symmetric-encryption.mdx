@@ -1,0 +1,107 @@
+---
+title: Symmetric Encryption
+sidebar_label: Symmetric Encryption
+sidebar_position: 6
+description: Methods to securely encrypt data (AES-256-GCM)
+---
+
+import RequiredLabel from '@site/src/components/RequiredLabel';
+import Tips from '@site/src/common/tips.mdx'
+import TimingAttack from '@site/src/common/timing-attack.mdx'
+
+In this section, we will discuss symmetric encryption and decryption using AES-256-GCM,focusing on best practices to ensure robust security.
+AES-256-GCM is a widely used and highly secure cryptographic algorithm, but its strength depends heavily on proper implementation.
+Key best practices include never reusing initialization vectors (IVs), as doing so can compromise the encryption's integrity.
+It is also crucial to always derive a secure encryption key from the user-provided key using a strong key derivation function
+like Argon2 or HKDF. In certain cases, it’s recommended to encapsulate the Data Encryption Key (DEK) by encrypting it separately,
+providing an additional layer of security for sensitive operations.
+Following these principles ensures that your symmetric encryption implementations remain secure and resilient against common cryptographic attacks.
+
+
+## Symmetric secure data encrypt
+
+Method to encrypt data using AES-256-GCM with a randomly generated Data Encryption Key (DEK).
+It ensures security by generating unique IVs and salts, securely deriving encryption keys,
+and encrypting the DEK using a master key.
+The final output is a concatenation of the encrypted DEK and the encrypted data, ensuring both confidentiality and key encapsulation.
+
+### `symmetricSecureDataEncrypt`
+
+```typescript
+public symmetricSecureDataEncrypt (
+  data: string | Buffer,
+): Promise<Buffer>;
+```
+
+**Parameters:**
+
+| Name                      | Type             | Default | Description                 |
+|---------------------------|------------------|---------|-----------------------------|
+| **data** <RequiredLabel/> | string \| Buffer |         | String or buffer to encrypt |
+
+**Outputs:**
+
+As output, it will return a [Buffer][1] `<Buffer cc 2b.....cd a1 08>`
+
+#### **Usage:**
+```typescript
+async exampleEncrypt(
+  data: string,
+): Promise<string> {
+  const bufferData = Buffer.from(data, 'utf-8');
+  const encryptedData = await this.cryptographyService.symmetricSecureDataEncrypt(data);
+  return encryptedData.toString('hex')
+}
+```
+
+
+[//]: #--------------------#
+
+
+## Symmetric secure data encrypt
+
+Method to decrypt data that was encrypted using the method [`symmetricSecureDataEncrypt`][2]
+
+:::warning
+Remember that the previous data must have been encrypted using [`symmetricSecureDataEncrypt`][2] method.
+:::
+
+
+### `symmetricSecureDataDecrypt`
+
+```typescript
+public symmetricSecureDataDecrypt (
+  ata: string | Buffer
+): Promise<Buffer>;
+```
+
+**Parameters:**
+
+| Name                      | Type             | Default | Description                 |
+|---------------------------|------------------|---------|-----------------------------|
+| **data** <RequiredLabel/> | string \| Buffer |         | String or buffer to decrypt |
+
+**Outputs:**
+
+As output, it will return a [Buffer][1] `<Buffer cc 2b.....cd a1 08>`
+
+
+#### **Usage:**
+```typescript
+async exampleDecrypt(
+  data: string,
+): Promise<string> {
+  const bufferData = Buffer.from(data, 'hex');
+  const decryptedData = await this.cryptographyService.symmetricSecureDataDecrypt(data);
+  return decryptedData.toString('utf-8')
+}
+```
+
+
+<Tips />
+
+
+
+
+[1]: https://nodejs.org/api/buffer.html
+[2]: symmetric-encryption#symmetricsecuredataencrypt

@@ -1,0 +1,160 @@
+---
+title: Symmetric Secure Data Encrypt
+sidebar_label: Symmetric Secure Data Encrypt
+sidebar_position: 2
+---
+
+In the following section, you will see a diagram of the cryptographic operations performed when calling the method [`symmetricSecureDataEncrypt`][1]
+
+This method securely encrypts input data by first generating a random 32-byte Data Encryption Key (DEK)
+using a cryptographically secure method. It then encrypts the data using AES-256-GCM with the DEK,
+producing an output that includes the initialization vector (IV), salt, authentication tag, and ciphertext.
+After encrypting the data, the method also encrypts the DEK itself using a master key, and finally,
+it concatenates the encrypted DEK and the encrypted data, returning the complete encrypted result for secure storage or transmission.
+
+## **Diagram**
+
+<div style={{ textAlign: 'center' }}>
+  ```mermaid
+  graph TD
+  A[Input: Data] --> ID
+
+  DEK{Generate DEK} --> SG1
+
+  subgraph SG1[Generate DEK]
+  SG1A1[Generate 64 bytes of random data] --> SG1A1A2[Create Secret Key from random data]
+  SG1A1A2 --> SG1A1A3[Generate another 64 bytes of random data]
+  SG1A1A3 --> SG1A1A4[Use HKDF with sha3-256 to derive IV]
+  end
+
+
+  subgraph ED[Encrypt Data]
+  SG1A1A4 --> DEK1[DEK]
+
+  ID(DATA)
+
+  IV1[IV] --> IV1A1{Generate IV}
+  SALT1[SALT] --> SALT1A1{Generate SALT}
+
+  IV1A1 --> SGIV1
+  SALT1A1 --> SGSALT1
+
+  subgraph SGIV1["Generate IV (12 bytes)"]
+  SGIV1A1[Generate 64 bytes of random data] --> SGIV1A1A2[Create Secret Key from random data]
+  SGIV1A1A2 --> SGIV1A1A3[Generate another 64 bytes of random data]
+  SGIV1A1A3 --> SGIV1A1A4[Use HKDF with sha3-256 to derive IV]
+  end
+
+  subgraph SGSALT1["Generate Salt (64 bytes)"]
+  SGSSALT1A1[Generate 64 bytes of random data] --> SGSSALT1A1A2[Create Secret Key from random data]
+  SGSSALT1A1A2 --> SGSSALT1A1A3[Generate another 64 bytes of random data]
+  SGSSALT1A1A3 --> SGSSALT1A1A4[Use HKDF with sha3-256 to derive SALT]
+  end
+
+  DEK1 --> DERIVEDEK[Securely derive DEK using Argon2 + Salt]
+  DERIVEDEK --> EK1(Encryption Key)
+  SGSSALT1A1A4 --> DERIVEDEK
+
+  SGIV1A1A4 --> FIV1(IV)
+  FIV1 ==> FED{Encrypt Data using AES-256-GCM with Encryption Key + IV}
+  EK1 ==> FED
+  ID ==> FED
+
+  FED -.- FFED["Encrypted Data [IV + Salt + AuthTag + CipherText]"]
+  end
+
+
+  subgraph EDEK[Encrypt DEK]
+  SG1A1A4 --> DEK2(DEK)
+
+  IV2[IV] --> IV2A1{Generate IV}
+  SALT2[SALT] --> SALT2A1{Generate SALT}
+
+  IV2A1 --> SGIV2
+  SALT2A1 --> SGSALT2
+
+  subgraph SGIV2["Generate IV (12 bytes)"]
+  SGIV2A1[Generate 64 bytes of random data] --> SGIV2A1A2[Create Secret Key from random data]
+  SGIV2A1A2 --> SGIV2A1A3[Generate another 64 bytes of random data]
+  SGIV2A1A3 --> SGIV2A1A4[Use HKDF with sha3-256 to derive IV]
+  end
+
+  subgraph SGSALT2["Generate Salt (64 bytes)"]
+  SGSSALT2A1[Generate 64 bytes of random data] --> SGSSALT2A1A2[Create Secret Key from random data]
+  SGSSALT2A1A2 --> SGSSALT2A1A3[Generate another 64 bytes of random data]
+  SGSSALT2A1A3 --> SGSSALT2A1A4[Use HKDF with sha3-256 to derive SALT]
+  end
+
+  MK[MASTER KEY] --> DERIVEMK[Securely derive Master Key using Argon2 + Salt]
+  DERIVEMK --> EK2(Encryption Key)
+  SGSSALT2A1A4 --> DERIVEMK
+
+  SGIV2A1A4 --> FIV2(IV)
+
+  EK2 ==> FEDEK{Encrypt DEK using AES-256-GCM with Encryption Key + IV}
+  DEK2 ==> FEDEK
+  FIV2 ==> FEDEK
+
+  FEDEK -.- FFEDEK["Encrypted DEK [IV + Salt + AuthTag + CipherText]"]
+  end
+
+  FFEDEK -.-> FFDD(["Concatenate Encrypted DEK + Encrypted Data"])
+  FFED -.-> FFDD
+
+
+  %% -----------------
+
+  A:::inputDataStyle
+
+  MK:::masterKeyStyle
+
+  DEK:::dekStyle
+
+  SALT1A1:::saltStyle
+  SALT2A1:::saltStyle
+
+  IV1A1:::ivStyle
+  IV2A1:::ivStyle
+
+  FEDEK:::encryptionStyle
+  FED:::encryptionStyle
+
+  FFEDEK:::resultStyle
+  FFED:::resultStyle
+
+  FFDD:::finalResultStyle
+
+  %% Style definitions
+  classDef inputDataStyle fill:#00ff00,stroke:#333,stroke-width:2px;
+  classDef masterKeyStyle fill:#ff0000,stroke:#333,stroke-width:2px;
+  classDef dekStyle fill:#BCD3A3,stroke:#333,stroke-width:2px;
+  classDef ivStyle fill:#ffcc00,stroke:#333,stroke-width:2px;
+  classDef saltStyle fill:#ff6666,stroke:#333,stroke-width:2px;
+  classDef deriveKeyStyle fill:#66ccff,stroke:#333,stroke-width:2px;
+  classDef secureKeyStyle fill:#66ff66,stroke:#333,stroke-width:2px;
+  classDef encryptionStyle fill:#cc99ff,stroke:#333,stroke-width:2px;
+  classDef resultStyle fill:#ff9966,stroke:#333,stroke-width:2px;
+  classDef finalResultStyle fill:#66ffcc,stroke:#333,stroke-width:2px;
+  ```
+</div>
+
+
+## **Explanation of the Diagram**
+1) Generate DEK:
+    - The internal `createSaferRandomData` method generates a 32-byte **DEK** (Data Encryption Key) using `HKDF(sha3-256 + random_key + random_salt)`.
+2) Encrypt the Input Data:
+    - **Generate IV (12 bytes)**: A 12-byte IV is generated using `HKDF(sha3-256 + random_key + random_salt)`.
+    - **Generate Salt (64 bytes)**: A 64-byte salt is generated, also using `HKDF(sha3-256 + random_key + random_salt)`.
+    - **Derive Secure Encryption Key**: A secure encryption key is derived using **Argon2** with the DEK and salt.
+    - **Encrypt Data**: The input data is encrypted using **AES-256-GCM** with the derived secure encryption key, producing the encrypted result: _IV + Salt + AuthTag + CipherText_.
+3) Encrypt the DEK:
+    - The DEK itself is encrypted using the master key:
+      - **Generate IV (12 bytes)**: A 12-byte IV is generated using `HKDF(sha3-256 + random_key + random_salt)`.
+      - **Generate Salt (64 bytes)**: A 64-byte salt is generated, also using `HKDF(sha3-256 + random_key + random_salt)`.
+      - **Derive Master Key**: A secure encryption key is derived using **Argon2** with the [**MasterKey**][2] and salt.
+      - **Encrypt DEK**: The DEK is encrypted using AES-256-GCM, resulting in the encrypted DEK: _IV + Salt + AuthTag + CipherText_.
+4) Concatenate and Return:
+    - The encrypted DEK and the encrypted input data are concatenated to form the final output, which is then returned.
+
+[1]: ../guides/symmetric-encryption#symmetricsecuredataencrypt
+[2]: ../api-reference/settings#masterkey-1

@@ -1,0 +1,198 @@
+---
+title: HMAC
+sidebar_label: HMAC
+sidebar_position: 5
+description: Methods to create generic and secure HMACs
+---
+
+import RequiredLabel from '@site/src/components/RequiredLabel';
+import Tips from '@site/src/common/tips.mdx'
+import TimingAttack from '@site/src/common/timing-attack.mdx'
+
+In this section, we will dive into various methods for applying cryptographic [HMAC hash-based message authentication code][2]
+both generically and securely.
+We will cover best practices to ensure that the hmac process is robust against common vulnerabilities.
+Additionally, we will explore secure techniques for comparing hmac values,
+focusing on the use of time-safe comparison functions to prevent timing attacks.
+These methods are crucial for ensuring the integrity and security of sensitive data in cryptographic operations.
+
+## Create a custom HMAC
+
+Method to create a hmac of a text where you could choose the desired digest algorithm to use `sha1, sha256, sha3-256,...`
+
+### `createCustomHmac`
+
+```typescript
+public createCustomHmac (
+  algorithm: string,
+  key: Buffer,
+  data: string,
+): Buffer;
+```
+
+**Parameters:**
+
+| Name                           | Type   | Default | Description                                            |
+|--------------------------------|--------|---------|--------------------------------------------------------|
+| **algorithm** <RequiredLabel/> | string |         | Digest algorithm to use (`sha1, sha256, sha3-256,...`) |
+| **key** <RequiredLabel/>       | Buffer |         | Secret key to use on the hmac                          |
+| **data** <RequiredLabel/>      | string |         | String to hmac                                         |
+
+**Outputs:**
+
+As output, it will return a [Buffer][1] `<Buffer cc 2b.....cd a1 08>`
+
+#### **Usage:**
+```typescript
+async exampleHmac(
+  data: string,
+): string {
+  const key = this.cryptographyService.generateSymmetricKey(128);
+  const hmacResult = this.cryptographyService.createCustomHmac('sha-512', key, data);
+  return hmacResult.toString('hex')
+}
+```
+
+
+[//]: #--------------------#
+
+
+## Verify a custom HMAC
+
+Method to verify if an existing hmac matches the hmac of the desired text.
+You need choose the existing hmac algorithm type used `sha1, sha256, sha3-256,...`
+
+### `verifyCustomHmac`
+
+```typescript
+public verifyCustomHmac (
+  algorithm: string,
+  key: Buffer,
+  data: string,
+  oldHmac: string | Buffer,
+): boolean;
+```
+
+**Parameters:**
+
+| Name                           | Type             | Default | Description                                            |
+|--------------------------------|------------------|---------|--------------------------------------------------------|
+| **algorithm** <RequiredLabel/> | string           |         | Digest algorithm to use (`sha1, sha256, sha3-256,...`) |
+| **key** <RequiredLabel/>       | Buffer           |         | Secret key to use on the hmac                          |
+| **data** <RequiredLabel/>      | string           |         | String to hmac                                         |
+| **oldHmac** <RequiredLabel/>   | string \| Buffer |         | Buffer or string of the existing hmac                  |
+
+**Outputs:**
+
+As output, it will return `true` if both matches, or `false` if not.
+
+<TimingAttack/>
+
+#### **Usage:**
+```typescript
+async checkHmac(
+  oldKey: string,
+  existingHmac: string,
+  data: string,
+): boolean {
+  const bufferExistingHmac = Buffer.from(existingHmac, 'hex');
+  const bufferOldKey = Buffer.from(oldKey, 'hex');
+  return this.cryptographyService.verifyCustomHmac('sha-512', bufferOldKey, data, bufferExistingHmac);
+}
+```
+
+
+[//]: #--------------------#
+
+
+## Create a secure HMAC
+
+Method to create an extra secure hmac of a text.
+
+In this case the `sha3-256` digest algorithm will be used.
+
+### `createSecureHmac`
+
+```typescript
+public createSecureHmac (
+  data: string
+): Buffer;
+```
+
+**Parameters:**
+
+| Name                           | Type   | Default | Description                                                                                                 |
+|--------------------------------|--------|---------|-------------------------------------------------------------------------------------------------------------|
+| **data** <RequiredLabel/>      | string |         | String to hmac                                                                                              |
+
+**Outputs:**
+
+As output, it will return a [Buffer][1] `<Buffer cc 2b.....cd a1 08>`
+
+#### **Usage:**
+```typescript
+async exampleSecureHmac(
+  data: string,
+): string {
+  const hmacResult = this.cryptographyService.createSecureHmac(data);
+  return hmacResult.toString('hex')
+}
+```
+
+
+[//]: #--------------------#
+
+
+## Verify a secure HMAC
+
+Method to verify if an existing hmac matches the hmac of the desired text.
+:::warning
+Remember that the previous hmac must have been generated using [`createSecureHmac`](hmac#createsecurehmac) method.
+:::
+
+
+### `verifySecureHmac`
+
+```typescript
+public verifySecureHmac (
+  data: string,
+  oldHmac: string | Buffer
+): boolean;
+```
+
+**Parameters:**
+
+| Name                         | Type             | Default | Description                           |
+|------------------------------|------------------|---------|---------------------------------------|
+| **data** <RequiredLabel/>    | string           |         | String to hmac                        |
+| **oldHmac** <RequiredLabel/> | Buffer \| string |         | Buffer or string of the existing hmac |
+
+**Outputs:**
+
+As output, it will return `true` if both matches, or `false` if not.
+
+<TimingAttack/>
+
+#### **Usage:**
+```typescript
+async exampleVerifySecureHmac(
+  data: string,
+  existingHmac: string,
+): boolean {
+  const bufferExistingHmac = Buffer.from(existingHmac, 'hex');
+  return this.cryptographyService.verifySecureHmac(data, bufferExistingHmac);
+}
+```
+
+
+[//]: #--------------------#
+
+
+
+
+<Tips />
+
+
+
+[1]: https://nodejs.org/api/buffer.html
+[2]: https://en.wikipedia.org/wiki/HMAC

@@ -1,0 +1,229 @@
+---
+title: Hashing
+sidebar_label: Hashing
+sidebar_position: 3
+description: Methods to create generic and secure digests
+---
+
+import RequiredLabel from '@site/src/components/RequiredLabel';
+import Tips from '@site/src/common/tips.mdx'
+import TimingAttack from '@site/src/common/timing-attack.mdx'
+
+In this section, we will dive into various methods for applying cryptographic [hashes][2] both generically and securely.
+We will cover best practices to ensure that the hashing process is robust against common vulnerabilities.
+Additionally, we will explore secure techniques for comparing hash values,
+focusing on the use of time-safe comparison functions to prevent timing attacks.
+These methods are crucial for ensuring the integrity and security of sensitive data in cryptographic operations.
+
+## Create a custom HASH
+
+Method to create a hash of a text where you could choose the desires hash algorithm to use `sha1, sha256, sha3-256,...`
+
+### `createCustomHash`
+
+```typescript
+public createCustomHash (
+  algorithm: string,
+  data: string,
+  outputLength: number = 0,
+): Buffer;
+```
+
+#### **Parameters:**
+
+| Name                           | Type   | Default | Description                                                                                                 |
+|--------------------------------|--------|---------|-------------------------------------------------------------------------------------------------------------|
+| **algorithm** <RequiredLabel/> | string |         | Digest algorithm to use (`sha1, sha256, sha3-256,...`)                                                      |
+| **data** <RequiredLabel/>      | string |         | String to hash                                                                                              |
+| **outputLength**               | number | 0       | Option to specify the desired output length in bytes when using XOF hash functions. For example: `shake256` |
+
+#### **Outputs:**
+
+As output, it will return a [Buffer][1] `<Buffer cc 2b.....cd a1 08>`
+
+#### **Usage:**
+```typescript
+async hashUserPasswrd(
+  plainPassword: string,
+): string {
+  const hashedPassword = this.cryptographyService.createCustomHash('sha-256', plainPassword);
+  return hashedPassword.toString('hex')
+}
+```
+
+
+[//]: #--------------------#
+
+
+## Verify a custom HASH
+
+Method to verify if an existing hash matches the hash of the desired text.
+You need choose the existing hash algorithm type used `sha1, sha256, sha3-256,...`
+
+### `verifyCustomHash`
+
+```typescript
+public verifyCustomHash (
+  algorithm: string,
+  data: string,
+  oldHash: string | Buffer,
+  outputLength: number = 0,
+): boolean;
+```
+
+#### **Parameters:**
+
+| Name                           | Type             | Default | Description                                                                                                 |
+|--------------------------------|------------------|---------|-------------------------------------------------------------------------------------------------------------|
+| **algorithm** <RequiredLabel/> | string           |         | Digest algorithm to use (`sha1, sha256, sha3-256,...`)                                                      |
+| **data** <RequiredLabel/>      | string           |         | String to hash                                                                                              |
+| **oldHash** <RequiredLabel/>   | Buffer \| string |         | Buffer or string of the existing hash                                                                       |
+| **outputLength**               | number           | 0       | Option to specify the desired output length in bytes when using XOF hash functions. For example: `shake256` |
+
+#### **Outputs:**
+
+As output, it will return `true` if both matches, or `false` if not.
+<TimingAttack/>
+
+#### **Usage:**
+```typescript
+async checkUserPassword(
+  plainPassword: string,
+  hashedPassword: string,
+): boolean {
+  const bufferExistingHash = Buffer.from(hashedPassword, 'utf-8');
+  return this.cryptographyService.verifyCustomHash('sha-256', plainPassword, bufferExistingHash);
+}
+```
+
+
+[//]: #--------------------#
+
+
+## Create a secure HASH
+
+Method to create an extra secure hash of a text.
+
+In this case the XOF hash function `shake256` will be used, producing and output of **384 bits** length.
+
+### `createSecureHash`
+
+```typescript
+public createCustomHash (
+  data: string
+): Buffer;
+```
+
+#### **Parameters:**
+
+| Name                           | Type   | Default | Description                                                                                                 |
+|--------------------------------|--------|---------|-------------------------------------------------------------------------------------------------------------|
+| **data** <RequiredLabel/>      | string |         | String to hash                                                                                              |
+
+#### **Outputs:**
+
+As output, it will return a [Buffer][1] `<Buffer cc 2b.....cd a1 08>`
+
+#### **Usage:**
+```typescript
+async secureHashUserPasswrd(
+  plainPassword: string,
+): string {
+  const hashedPassword = this.cryptographyService.createSecureHash(plainPassword);
+  return hashedPassword.toString('hex')
+}
+```
+
+
+[//]: #--------------------#
+
+
+## Verify a secure HASH
+
+Method to verify if an existing hash matches the hash of the desired text.
+:::warning
+Remember that the previous hash must have been generated using [`createSecureHash`](hashing#createsecurehash) method.
+:::
+
+
+### `verifySecureHash`
+
+```typescript
+public verifySecureHash (
+  data: string,
+  oldHash: string | Buffer
+): boolean;
+```
+
+#### **Parameters:**
+
+| Name                         | Type             | Default | Description                           |
+|------------------------------|------------------|---------|---------------------------------------|
+| **data** <RequiredLabel/>    | string           |         | String to hash                        |
+| **oldHash** <RequiredLabel/> | Buffer \| string |         | Buffer or string of the existing hash |
+
+#### **Outputs:**
+
+As output, it will return `true` if both matches, or `false` if not.
+
+<TimingAttack/>
+
+#### **Usage:**
+```typescript
+async checkUserPassword(
+  plainPassword: string,
+  hashedPassword: string,
+): boolean {
+  const bufferExistingHash = Buffer.from(hashedPassword, 'utf-8');
+  return this.cryptographyService.verifySecureHash(plainPassword, bufferExistingHash);
+}
+```
+
+
+[//]: #--------------------#
+
+
+## Create insecure fast HASH
+
+Method to create an insecure but fast hash using the _**sha1**_ digest algorithm.
+
+:::danger
+This method should not be used if you want to guarantee good security.
+
+[Read this article][3]
+:::
+
+### `createInsecureFastHash`
+
+```typescript
+public createInsecureFastHash (
+  data: string
+): Buffer;
+```
+
+#### **Parameters:**
+
+| Name                         | Type             | Default | Description                           |
+|------------------------------|------------------|---------|---------------------------------------|
+| **data** <RequiredLabel/>    | string           |         | String to hash                        |
+
+#### **Outputs:**
+
+As output, it will return a [Buffer][1] `<Buffer cc 2b.....cd a1 08>`
+
+#### **Usage:**
+```typescript
+async exampleFastHashSHA1(): string {
+  const sha1Hash = this.cryptographyService.createInsecureFastHash('this is not a secret');
+  return sha1Hash.toString('base64')
+}
+```
+
+
+
+
+<Tips />
+
+[1]: https://nodejs.org/api/buffer.html
+[2]: https://en.wikipedia.org/wiki/Hash_function
+[3]: https://www.schneier.com/blog/archives/2005/02/sha1_broken.html
