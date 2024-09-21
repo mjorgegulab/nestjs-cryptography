@@ -18,6 +18,6 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: yarn
       - run: yarn build
-      - run: yarn publish:npm
+      - run: npm publish --registry=https://registry.npmjs.org/ --access public
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_PUBLISH_TOKEN}}
