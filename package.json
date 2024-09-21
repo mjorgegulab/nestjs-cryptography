@@ -1,13 +1,13 @@
 {
   "name": "nestjs-cryptography",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "author": {
     "name": "Marc Jorge Gonzalez",
     "url": "https://github.com/mjorgegulab"
   },
   "license": "MIT",
   "description": "Secure NestJS cryptography module 🔐",
-  "homepage": "https://github.com/mjorgegulab/nestjs-cryptography",
+  "homepage": "https://nestjs-cryptography.thewolfx41.dev",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mjorgegulab/nestjs-cryptography.git"
