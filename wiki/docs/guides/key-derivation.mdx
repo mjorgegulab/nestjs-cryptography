@@ -39,11 +39,11 @@ public deriveMasterKey (
 
 #### **Parameters:**
 
-| Name                           | Type    | Default                    | Description                                         |
-|--------------------------------|---------|----------------------------|-----------------------------------------------------|
-| **masterKey** <RequiredLabel/> | boolean | false                      | MasterKey of password to derive                     |
-| **salt** <RequiredLabel/>      | Buffer  | false                      | Salt to increase the security of the key derivation |
-| **length**                     | number  | [`kdf.outputKeyLength`][3] | The desired derived output key length               |
+| Name                           | Type             | Default                    | Description                                         |
+|--------------------------------|------------------|----------------------------|-----------------------------------------------------|
+| **masterKey** <RequiredLabel/> | string \| Buffer | false                      | String or buffer of the key to derive               |
+| **salt** <RequiredLabel/>      | Buffer           | false                      | Salt to increase the security of the key derivation |
+| **length**                     | number           | [`kdf.outputKeyLength`][3] | The desired derived output key length               |
 
 
 #### **Module Parameters:**
@@ -89,10 +89,10 @@ async deriveSecureKeyFromMasterKey(
 
 <Tips />
 
+
+
 [1]: https://nodejs.org/api/buffer.html
-
 [2]: ../intro#configuration
-
 [3]: ../api-reference/settings#outputkeylength
 [4]: ../api-reference/settings#argon2type
 [5]: ../api-reference/settings#memorycost

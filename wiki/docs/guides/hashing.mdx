@@ -34,15 +34,15 @@ public createCustomHash (
 | Name                           | Type                       | Default | Description                                                      |
 |--------------------------------|----------------------------|---------|------------------------------------------------------------------|
 | **algorithm** <RequiredLabel/> | string                     |         | Digest algorithm to use (`sha1, sha256, sha3-256,...`)           |
-| **data** <RequiredLabel/>      | string \| Buffer           |         | Buffer or string to hash                                         |
+| **data** <RequiredLabel/>      | string \| Buffer           |         | String or buffer to hash                                         |
 | **options**                    | [GenericOptions](#options) | `{}`    | Optional configuration object for input data encoding and output |
 
 #### **Options:**
 
-| Name              | Type             | Default | Description                                                                                                 |
-|-------------------|------------------|---------|-------------------------------------------------------------------------------------------------------------|
-| inputDataEncoding | `BufferEncoding` |         | Specifies the encoding of the input data (e.g., 'hex', 'base64').                                           |
-| outputLength      | number           |         | Option to specify the desired output length in bytes when using XOF hash functions. For example: `shake256` |
+| Name              | Type                  | Default | Description                                                                                                 |
+|-------------------|-----------------------|---------|-------------------------------------------------------------------------------------------------------------|
+| inputDataEncoding | [`BufferEncoding`][4] |         | Specifies the encoding of the input data (e.g., 'hex', 'base64').                                           |
+| outputLength      | number                |         | Option to specify the desired output length in bytes when using XOF hash functions. For example: `shake256` |
 
 #### **Outputs:**
 
@@ -89,16 +89,16 @@ public verifyCustomHash (
 | Name                           | Type                         | Default | Description                                                      |
 |--------------------------------|------------------------------|---------|------------------------------------------------------------------|
 | **algorithm** <RequiredLabel/> | string                       |         | Digest algorithm to use (`sha1, sha256, sha3-256,...`)           |
-| **data** <RequiredLabel/>      | Buffer \| string             |         | Buffer or string to hash                                         |
-| **oldHash** <RequiredLabel/>   | Buffer \| string             |         | Buffer or string of the existing hash                            |
+| **data** <RequiredLabel/>      | string \| Buffer             |         | String or buffer to hash                                         |
+| **oldHash** <RequiredLabel/>   | string \| Buffer             |         | String or buffer of the existing hash                            |
 | **options**                    | [GenericOptions](#options-1) | `{}`    | Optional configuration object for input data encoding and output |
 
 #### **Options:**
 
-| Name              | Type             | Default | Description                                                                                                 |
-|-------------------|------------------|---------|-------------------------------------------------------------------------------------------------------------|
-| inputDataEncoding | `BufferEncoding` |         | Specifies the encoding of the input data (e.g., 'hex', 'base64').                                           |
-| outputLength      | number           |         | Option to specify the desired output length in bytes when using XOF hash functions. For example: `shake256` |
+| Name              | Type                  | Default | Description                                                                                                 |
+|-------------------|-----------------------|---------|-------------------------------------------------------------------------------------------------------------|
+| inputDataEncoding | [`BufferEncoding`][4] |         | Specifies the encoding of the input data (e.g., 'hex', 'base64').                                           |
+| outputLength      | number                |         | Option to specify the desired output length in bytes when using XOF hash functions. For example: `shake256` |
 
 #### **Outputs:**
 
@@ -142,14 +142,14 @@ public createCustomHash (
 
 | Name                      | Type                         | Default | Description                                                      |
 |---------------------------|------------------------------|---------|------------------------------------------------------------------|
-| **data** <RequiredLabel/> | string \| Buffer             |         | Buffer or string to hash                                         |
+| **data** <RequiredLabel/> | string \| Buffer             |         | String or buffer to hash                                         |
 | **options**               | [GenericOptions](#options-2) | `{}`    | Optional configuration object for input data encoding and output |
 
 #### **Options:**
 
-| Name              | Type             | Default | Description                                                       |
-|-------------------|------------------|---------|-------------------------------------------------------------------|
-| inputDataEncoding | `BufferEncoding` |         | Specifies the encoding of the input data (e.g., 'hex', 'base64'). |
+| Name              | Type                  | Default | Description                                                       |
+|-------------------|-----------------------|---------|-------------------------------------------------------------------|
+| inputDataEncoding | [`BufferEncoding`][4] |         | Specifies the encoding of the input data (e.g., 'hex', 'base64'). |
 
 #### **Outputs:**
 
@@ -196,15 +196,15 @@ public verifySecureHash (
 
 | Name                         | Type                         | Default | Description                                                      |
 |------------------------------|------------------------------|---------|------------------------------------------------------------------|
-| **data** <RequiredLabel/>    | Buffer \| string             |         | Buffer or string to hash                                         |
-| **oldHash** <RequiredLabel/> | Buffer \| string             |         | Buffer or string of the existing hash                            |
+| **data** <RequiredLabel/>    | string \| Buffer             |         | String or buffer to hash                                         |
+| **oldHash** <RequiredLabel/> | string \| Buffer             |         | String or buffer of the existing hash                            |
 | **options**                  | [GenericOptions](#options-3) | `{}`    | Optional configuration object for input data encoding and output |
 
 #### **Options:**
 
-| Name              | Type             | Default | Description                                                       |
-|-------------------|------------------|---------|-------------------------------------------------------------------|
-| inputDataEncoding | `BufferEncoding` |         | Specifies the encoding of the input data (e.g., 'hex', 'base64'). |
+| Name              | Type                  | Default | Description                                                       |
+|-------------------|-----------------------|---------|-------------------------------------------------------------------|
+| inputDataEncoding | [`BufferEncoding`][4] |         | Specifies the encoding of the input data (e.g., 'hex', 'base64'). |
 
 #### **Outputs:**
 
@@ -242,3 +242,5 @@ async checkUserPassword(
 [1]: https://nodejs.org/api/buffer.html
 [2]: https://en.wikipedia.org/wiki/Hash_function
 [3]: https://www.schneier.com/blog/archives/2005/02/sha1_broken.html
+[4]: https://nodejs.org/api/buffer.html#buffers-and-character-encodings
+
