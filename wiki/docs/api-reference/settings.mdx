@@ -66,7 +66,7 @@ imports: [
           timeCost: 32,
           memoryCost: 131072,
           argon2Type: argon2.argon2i,
-          defaultOutputKeyLength: 32,
+          outputKeyLength: 32,
         },
         hashing: {
           password: {
@@ -100,7 +100,7 @@ export class AppModule {}
 
 Settings for the Key Derivation Function.
 
-  - ### <u>defaultOutputKeyLength</u>
+  - ### <u>outputKeyLength</u>
       > `type: number` | **required**
 
     The default length (in bytes) of the derived key.

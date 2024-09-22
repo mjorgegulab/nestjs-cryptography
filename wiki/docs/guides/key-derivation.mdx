@@ -53,7 +53,7 @@ Internally, this method uses certain parameters that are defined at the module l
 as we have seen [previously][2]. The internal parameters used and their corresponding configuration keys are as follows:
 
   - **hashLength**: Specifies the length of the resulting derived key.
-      This is set via [`kdf.defaultOutputKeyLength`][3] and determines the size of the final hash in bytes.
+      This is set via [`kdf.outputKeyLength`][3] and determines the size of the final hash in bytes.
 
   - **type**: Defines the variant of Argon2 to use (_argon2i_, _argon2d_, or _argon2id_).
 This is configured using [`kdf.argon2Type`][4].
@@ -92,7 +92,7 @@ async deriveSecureKeyFromMasterKey(
 
 [2]: ../intro#configuration
 
-[3]: ../api-reference/settings#defaultoutputkeylength
+[3]: ../api-reference/settings#outputkeylength
 [4]: ../api-reference/settings#argon2type
 [5]: ../api-reference/settings#memorycost
 [6]: ../api-reference/settings#timecost
