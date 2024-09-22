@@ -20,7 +20,9 @@ providing an additional layer of security for sensitive operations.
 Following these principles ensures that your symmetric encryption implementations remain secure and resilient against common cryptographic attacks.
 
 
-## Symmetric secure data encrypt <RecommendedLabel />
+## Symmetric secure data encrypt
+
+#### <RecommendedLabel />
 
 Method to encrypt data using AES-256-GCM with a randomly generated Data Encryption Key (DEK).
 It ensures security by generating unique IVs and salts using the [`createSafeRandomData`][4], securely deriving encryption keys,
@@ -83,7 +85,9 @@ async exampleEncrypt(
 [//]: #--------------------#
 
 
-## Symmetric secure data decrypt <RecommendedLabel />
+## Symmetric secure data decrypt
+
+#### <RecommendedLabel />
 
 Method to decrypt data that was encrypted using the method [`symmetricSecureDataEncrypt`][2]
 
@@ -137,7 +141,9 @@ async exampleDecrypt(
 [//]: #--------------------#
 
 
-## Symmetric data encrypt <GenericLabel />
+## Symmetric data encrypt
+
+#### <GenericLabel />
 
 Method to encrypt data using AES-256-GCM and using unique IVs and salts using the [`createSafeRandomData`][4],
 and deriving the encryption key using Argon2 KDF.
@@ -200,7 +206,9 @@ async exampleEncrypt(
 [//]: #--------------------#
 
 
-## Symmetric data decrypt <GenericLabel />
+## Symmetric data decrypt
+
+#### <GenericLabel />
 
 Method to decrypt data that was encrypted using the method [`symmetricDataEncrypt`][5]
 
@@ -259,4 +267,4 @@ async exampleDecrypt(
 [3]: https://nodejs.org/api/buffer.html#buffers-and-character-encodings
 [4]: generics#generate-secure-random-data
 [5]: #symmetricdataencrypt
-[6]: .../internals/symmetric-secure-data-encrypt
+[6]: ../internals/symmetric-secure-data-encrypt
