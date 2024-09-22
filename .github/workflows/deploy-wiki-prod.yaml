@@ -1,4 +1,4 @@
-name: Deploy WIKI prod
+name: Publish Wiki
 
 on:
   workflow_dispatch:
