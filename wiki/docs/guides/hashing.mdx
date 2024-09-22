@@ -232,59 +232,12 @@ async checkUserPassword(
 [//]: #--------------------#
 
 
-## Create insecure fast HASH
-
-Method to create an insecure but fast hash using the _**sha1**_ digest algorithm.
-
-:::danger
-This method should not be used if you want to guarantee good security.
-
-[Read this article][3]
-:::
-
-### `createInsecureFastHash`
-
-```typescript
-public createInsecureFastHash (
-  data: string | Buffer,
-  options?: GenericOptionsInterface,
-): Buffer;
-```
-
-#### **Parameters:**
-
-| Name                      | Type                         | Default | Description                                                      |
-|---------------------------|------------------------------|---------|------------------------------------------------------------------|
-| **data** <RequiredLabel/> | string \| Buffer             |         | Buffer or string to hash                                         |
-| **options**               | [GenericOptions](#options-4) | `{}`    | Optional configuration object for input data encoding and output |
-
-#### **Options:**
-
-| Name              | Type             | Default | Description                                                       |
-|-------------------|------------------|---------|-------------------------------------------------------------------|
-| inputDataEncoding | `BufferEncoding` |         | Specifies the encoding of the input data (e.g., 'hex', 'base64'). |
-
-#### **Outputs:**
-
-As output, it will return a [Buffer][1] `<Buffer cc 2b.....cd a1 08>`
-
-#### **Usage:**
-```typescript
-async exampleFastHashSHA1(): string {
-  const sha1Hash = this.cryptographyService.createInsecureFastHash(
-    'this is not a secret',
-    {
-      inputDataEncoding: 'utf-8',
-    }
-  );
-  return sha1Hash.toString('base64')
-}
-```
-
-
-
-
 <Tips />
+
+
+[//]: #--------------------#
+
+
 
 [1]: https://nodejs.org/api/buffer.html
 [2]: https://en.wikipedia.org/wiki/Hash_function
