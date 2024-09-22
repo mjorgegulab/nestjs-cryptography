@@ -11,7 +11,7 @@ describe('CryptographyService', () => {
       timeCost: 3,
       memoryCost: 65536,
       argon2Type: argon2.argon2i,
-      defaultOutputKeyLength: 32,
+      outputKeyLength: 32,
     },
     hashing: {
       password: {
