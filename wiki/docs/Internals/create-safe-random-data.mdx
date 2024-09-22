@@ -1,0 +1,41 @@
+---
+title: Create Safe Random Data
+sidebar_label: Create Safe Random Data
+sidebar_position: 2
+description: Internals of createSafeRandomData
+---
+
+In the following section, you will see a diagram of the cryptographic operations performed when calling the method [`createSafeRandomData`][1]
+
+This method generate a cryptographically secure random bytes of the desired lengths using **HKDF**
+with `sha3-256` digest algorithm using the following params:
+ - Generate a random key using the secure random bytes' generator.
+ - Generate a salt using the secure random bytes' generator.
+
+
+<div style={{ textAlign: 'center' }}>
+  ```mermaid
+  graph TD
+    A[Key Length: length]
+
+    A --> CRB[Create Random Bytes: 64 bytes]
+    CRB --> CSK[Create Secret Key]
+    CSK ==> SK(SECRET_KEY)
+
+    A --> CRB2[Create Random Bytes: 64 bytes]
+    CRB2 ==> RB[RANDOM_BYTES]
+
+    SK -.-> HKDF["HKDF ( sha3-256 + SECRET_KEY + RANDOM_BYTES + length )"]
+    RB -.-> HKDF --> F([Return Secure Random Bytes])
+
+
+    style CRB fill:#f9f,stroke:#333,stroke-width:2px
+    style CRB2 fill:#f9f,stroke:#333,stroke-width:2px
+    style SK fill:#bbf,stroke:#333,stroke-width:2px
+    style RB fill:#bbf,stroke:#333,stroke-width:2px
+    style HKDF fill:#bfb,stroke:#333,stroke-width:2px
+    style F fill:#00f0f0,stroke:#F0000,stroke-width:2px
+  ```
+</div>
+
+[1]: ../guides/generics#generate-secure-random-data
