@@ -6,6 +6,7 @@ export enum Argon2Type {
 
 export interface CryptographyOptionsInterface {
   kdf: {
+    outputKeyLength: number;
     defaultOutputKeyLength: number;
     argon2Type: Argon2Type;
     memoryCost: number;

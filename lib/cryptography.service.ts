@@ -99,7 +99,7 @@ export class CryptographyService {
     length: number,
   ): Promise<Buffer> {
     return await argon2.hash(masterKey, {
-      hashLength: length ? length : this.options.kdf.defaultOutputKeyLength,
+      hashLength: length ? length : this.options.kdf.outputKeyLength,
       salt: salt,
       type: this.options.kdf.argon2Type,
       memoryCost: this.options.kdf.memoryCost,
