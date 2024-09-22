@@ -67,7 +67,7 @@ export class CryptographyService {
     );
   }
 
-  private createSaferRandomData(length: number): Buffer {
+  public createSafeRandomData(length: number): Buffer {
     return Buffer.from(
       crypto.hkdfSync(
         'sha3-256',
@@ -260,8 +260,8 @@ export class CryptographyService {
     const inputData = this.convertInputData(data, options?.inputDataEncoding);
     const inputKey = this.convertInputData(key, options?.inputKeyEncoding);
 
-    const iv = this.createSaferRandomData(12);
-    const salt = this.createSaferRandomData(64);
+    const iv = this.createSafeRandomData(12);
+    const salt = this.createSafeRandomData(64);
 
     const secureEncryptionKey = await this.deriveMasterKey(inputKey, salt, 32);
 
@@ -318,7 +318,7 @@ export class CryptographyService {
     data: string | Buffer,
     options?: GenericOptionsInterface,
   ): Promise<Buffer> {
-    const dek = this.createSaferRandomData(32);
+    const dek = this.createSafeRandomData(32);
 
     const cipheredData = await this.symmetricDataEncrypt(data, dek, options);
 
