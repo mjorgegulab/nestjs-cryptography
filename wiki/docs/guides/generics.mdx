@@ -43,6 +43,36 @@ async someAwesomeMethod(): Promise<string> {
 }
 ```
 
+
+[//]: #--------------------#
+
+## Generate secure random data
+
+Method to generate a secure random data of the desired length.
+
+### `createSafeRandomData`
+
+```tsx
+public createSafeRandomData (
+  length: number
+): Buffer;
+```
+
+**Parameters:**
+
+| Name                    | Type   | Default | Description                            |
+|-------------------------|--------|---------|----------------------------------------|
+| length <RequiredLabel/> | number |         | The random data output length in bytes |
+
+
+**Outputs:**
+
+As output, it will return a [Buffer][1] `<Buffer cc 2b.....cd a1 08>`
+
+
+[//]: #--------------------#
+
+
 ## Generate random password
 
 Method to generate a random password with this set of characters: `A-Z a-z 0-9 + = /`.
@@ -74,6 +104,10 @@ async createUserPassword(): Promise<string> {
   return newPassword;
 }
 ```
+
+
+[//]: #--------------------#
+
 
 ## Generate symmetric key
 
@@ -121,7 +155,13 @@ async createSymmetricKey(): Promise<void> {
 ```
 
 
+[//]: #--------------------#
+
+
 <Tips />
+
+
+[//]: #--------------------#
 
 
 [1]: https://nodejs.org/api/crypto.html#class-keyobject
