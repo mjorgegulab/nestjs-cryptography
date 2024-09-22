@@ -96,10 +96,10 @@ export class CryptographyService {
   public async deriveMasterKey(
     masterKey: string | Buffer,
     salt: Buffer,
-    length: number,
+    length?: number,
   ): Promise<Buffer> {
     return await argon2.hash(masterKey, {
-      hashLength: length ? length : this.options.kdf.outputKeyLength,
+      hashLength: length ?? this.options.kdf.outputKeyLength,
       salt: salt,
       type: this.options.kdf.argon2Type,
       memoryCost: this.options.kdf.memoryCost,
