@@ -2,8 +2,13 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/d4c33e2a77d64f89ba7f6ba54c6d8cb5)](https://app.codacy.com/gh/mjorgegulab/nestjs-cryptography/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![CodeQL](https://github.com/mjorgegulab/nestjs-cryptography/actions/workflows/github-code-scanning/codeql/badge.svg?branch=main)](https://github.com/mjorgegulab/nestjs-cryptography/actions/workflows/github-code-scanning/codeql)
 [![Publish Wiki](https://github.com/mjorgegulab/nestjs-cryptography/actions/workflows/deploy-wiki-prod.yaml/badge.svg?branch=main)](https://nestjs-cryptography.thewolfx41.dev)
+
 # NestJS - Cryptography
-## Secure NestJS cryptography module 🔐
+
+<p align="center">
+  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+</p>
+
 
 ## Quick Start
 
