@@ -1,0 +1,103 @@
+---
+title: Symmetric Data Encrypt
+sidebar_label: Symmetric Data Encrypt
+sidebar_position: 4
+description: Internals of symmetricDataEncrypt
+---
+
+In the following section, you will see a diagram of the cryptographic operations performed when calling the method [`symmetricDataEncrypt`][1]
+
+This method securely encrypts input data by first generating a 12-byte Initialization Vector **(IV)**
+and a 64-byte **salt** using the `HKDF(sha3-256 + random_key + random_salt)` technique.
+It then derives a secure encryption key from the salt using the **Argon2** algorithm.
+The actual data is encrypted using **AES-256-GCM** with the derived key,
+resulting in an output that includes the IV, salt, authentication tag, and ciphertext.
+This comprehensive approach ensures the integrity and confidentiality of the data during storage or transmission.
+
+## **Diagram**
+
+<div style={{ textAlign: 'center' }}>
+  ```mermaid
+  graph TD
+
+  A[Input: Data] --> ID
+  B[Input: Key] --> IK
+
+  subgraph ED[Encrypt Data]
+
+    ID(DATA)
+    IK(KEY)
+
+    subgraph IVGENERATIONGRAPH["Generate IV (12 bytes)"]
+      IVL[Key Length: length] --> CRB[Create Random Bytes: 64 bytes]
+      CRB --> CSK[Create Secret Key]
+      CSK ==> SK(SECRET_KEY)
+
+      IVL --> CRB2[Create Random Bytes: 64 bytes]
+      CRB2 ==> RB[RANDOM_BYTES]
+
+      SK -.-> HKDF["HKDF ( sha3-256 + SECRET_KEY + RANDOM_BYTES + length )"]
+      RB -.-> HKDF --> F([Return Secure Random Bytes])
+    end
+
+    subgraph SALTGENERATIONGRAPH["Generate Salt (64 bytes)"]
+      IVL2[Key Length: length] --> CRB23[Create Random Bytes: 64 bytes]
+      CRB23 --> CSK2[Create Secret Key]
+      CSK2 ==> SK2(SECRET_KEY)
+
+      IVL2 --> CRB22[Create Random Bytes: 64 bytes]
+      CRB22 ==> RB2[RANDOM_BYTES]
+
+      SK2 -.-> HKDF2["HKDF ( sha3-256 + SECRET_KEY + RANDOM_BYTES + length )"]
+      RB2 -.-> HKDF2 --> F2([Return Secure Random Bytes])
+    end
+
+    F --> FIV(IV)
+
+    F2 --> DERIVEDEK[Securely derive DEK using Argon2 + Salt]
+    DERIVEDEK --> EK1(ENCRYPTION_KEY)
+    IK --> DERIVEDEK
+
+    FIV ==> FED([Encrypt DATA using AES-256-GCM with ENCRYPTION_KEY + IV])
+    EK1 ==> FED
+    ID ==> FED
+
+  end
+
+  FED -.- FFED["Encrypted data [IV + Salt + AuthTag + CipherText]"]
+
+
+  %% Style definitions
+  style ID fill:#BCD3A3,stroke:#333,stroke-width:2px;
+  style FIV fill:#ffcc00,stroke:#333,stroke-width:2px;
+  style EK1 fill:#66ff66,stroke:#333,stroke-width:2px;
+  style FED fill:#cc99ff,stroke:#333,stroke-width:2px;
+  style FFED fill:#ff9966,stroke:#333,stroke-width:2px;
+
+  style CRB fill:#f9f,stroke:#333,stroke-width:2px
+  style CRB2 fill:#f9f,stroke:#333,stroke-width:2px
+  style SK fill:#bbf,stroke:#333,stroke-width:2px
+  style RB fill:#bbf,stroke:#333,stroke-width:2px
+  style HKDF fill:#bfb,stroke:#333,stroke-width:2px
+  style F fill:#00f0f0,stroke:#F0000,stroke-width:2px
+
+  style CRB23 fill:#f9f,stroke:#333,stroke-width:2px
+  style CRB22 fill:#f9f,stroke:#333,stroke-width:2px
+  style SK2 fill:#bbf,stroke:#333,stroke-width:2px
+  style RB2 fill:#bbf,stroke:#333,stroke-width:2px
+  style HKDF2 fill:#bfb,stroke:#333,stroke-width:2px
+  style F2 fill:#00f0f0,stroke:#F0000,stroke-width:2px
+  ```
+</div>
+
+
+## **Explanation of the Diagram**
+1) **Generate IV (12 bytes)**: A 12-byte IV is generated using `HKDF(sha3-256 + random_key + random_salt)`.
+2) **Generate Salt (64 bytes)**: A 64-byte salt is generated, also using `HKDF(sha3-256 + random_key + random_salt)`.
+3) **Derive Secure Encryption Key**: A secure encryption key is derived using **Argon2** with the _Key_ and **Salt**.
+4) **Encrypt Data**: The _input data_ is encrypted using **AES-256-GCM** with the derived secure encryption key,
+producing the encrypted result in format: `[IV + Salt + AuthTag + CipherText]`.
+
+
+[1]: ../guides/symmetric-encryption#symmetricdataencrypt
+[2]: ../api-reference/settings#masterkey-1

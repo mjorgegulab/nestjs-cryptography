@@ -29,6 +29,11 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           editUrl: 'https://github.com/mjorgegulab/nestjs-cryptography',
           lastVersion: 'current',
+          versions: {
+            current: {
+              label: '3.x',
+            },
+          },
         },
         theme: {
           customCss: './src/css/custom.css',
