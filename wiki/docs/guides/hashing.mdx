@@ -24,18 +24,25 @@ Method to create a hash of a text where you could choose the desires hash algori
 ```typescript
 public createCustomHash (
   algorithm: string,
-  data: string,
-  outputLength: number = 0,
+  data: string | Buffer,
+  options?: GenericOptionsInterface,
 ): Buffer;
 ```
 
 #### **Parameters:**
 
-| Name                           | Type   | Default | Description                                                                                                 |
-|--------------------------------|--------|---------|-------------------------------------------------------------------------------------------------------------|
-| **algorithm** <RequiredLabel/> | string |         | Digest algorithm to use (`sha1, sha256, sha3-256,...`)                                                      |
-| **data** <RequiredLabel/>      | string |         | String to hash                                                                                              |
-| **outputLength**               | number | 0       | Option to specify the desired output length in bytes when using XOF hash functions. For example: `shake256` |
+| Name                           | Type                       | Default | Description                                                      |
+|--------------------------------|----------------------------|---------|------------------------------------------------------------------|
+| **algorithm** <RequiredLabel/> | string                     |         | Digest algorithm to use (`sha1, sha256, sha3-256,...`)           |
+| **data** <RequiredLabel/>      | string \| Buffer           |         | Buffer or string to hash                                         |
+| **options**                    | [GenericOptions](#options) | `{}`    | Optional configuration object for input data encoding and output |
+
+#### **Options:**
+
+| Name              | Type             | Default | Description                                                                                                 |
+|-------------------|------------------|---------|-------------------------------------------------------------------------------------------------------------|
+| inputDataEncoding | `BufferEncoding` |         | Specifies the encoding of the input data (e.g., 'hex', 'base64').                                           |
+| outputLength      | number           |         | Option to specify the desired output length in bytes when using XOF hash functions. For example: `shake256` |
 
 #### **Outputs:**
 
@@ -46,7 +53,13 @@ As output, it will return a [Buffer][1] `<Buffer cc 2b.....cd a1 08>`
 async hashUserPasswrd(
   plainPassword: string,
 ): string {
-  const hashedPassword = this.cryptographyService.createCustomHash('sha-256', plainPassword);
+  const hashedPassword = this.cryptographyService.createCustomHash(
+      'sha256',
+      plainPassword,
+      {
+        inputDataEncoding: 'utf-8',
+      }
+  );
   return hashedPassword.toString('hex')
 }
 ```
@@ -65,20 +78,27 @@ You need choose the existing hash algorithm type used `sha1, sha256, sha3-256,..
 ```typescript
 public verifyCustomHash (
   algorithm: string,
-  data: string,
+  data: string | Buffer,
   oldHash: string | Buffer,
-  outputLength: number = 0,
+  options?: GenericOptionsInterface,
 ): boolean;
 ```
 
 #### **Parameters:**
 
-| Name                           | Type             | Default | Description                                                                                                 |
-|--------------------------------|------------------|---------|-------------------------------------------------------------------------------------------------------------|
-| **algorithm** <RequiredLabel/> | string           |         | Digest algorithm to use (`sha1, sha256, sha3-256,...`)                                                      |
-| **data** <RequiredLabel/>      | string           |         | String to hash                                                                                              |
-| **oldHash** <RequiredLabel/>   | Buffer \| string |         | Buffer or string of the existing hash                                                                       |
-| **outputLength**               | number           | 0       | Option to specify the desired output length in bytes when using XOF hash functions. For example: `shake256` |
+| Name                           | Type                         | Default | Description                                                      |
+|--------------------------------|------------------------------|---------|------------------------------------------------------------------|
+| **algorithm** <RequiredLabel/> | string                       |         | Digest algorithm to use (`sha1, sha256, sha3-256,...`)           |
+| **data** <RequiredLabel/>      | Buffer \| string             |         | Buffer or string to hash                                         |
+| **oldHash** <RequiredLabel/>   | Buffer \| string             |         | Buffer or string of the existing hash                            |
+| **options**                    | [GenericOptions](#options-1) | `{}`    | Optional configuration object for input data encoding and output |
+
+#### **Options:**
+
+| Name              | Type             | Default | Description                                                                                                 |
+|-------------------|------------------|---------|-------------------------------------------------------------------------------------------------------------|
+| inputDataEncoding | `BufferEncoding` |         | Specifies the encoding of the input data (e.g., 'hex', 'base64').                                           |
+| outputLength      | number           |         | Option to specify the desired output length in bytes when using XOF hash functions. For example: `shake256` |
 
 #### **Outputs:**
 
@@ -91,8 +111,11 @@ async checkUserPassword(
   plainPassword: string,
   hashedPassword: string,
 ): boolean {
-  const bufferExistingHash = Buffer.from(hashedPassword, 'utf-8');
-  return this.cryptographyService.verifyCustomHash('sha-256', plainPassword, bufferExistingHash);
+  return this.cryptographyService.verifyCustomHash(
+      'sha256',
+      Buffer.from(plainPassword, 'utf-8'),
+      Buffer.from(bufferExistingHash, 'hex'),
+    );
 }
 ```
 
@@ -110,15 +133,23 @@ In this case the XOF hash function `shake256` will be used, producing and output
 
 ```typescript
 public createCustomHash (
-  data: string
+  data: string | Buffer,
+  options?: GenericOptionsInterface,
 ): Buffer;
 ```
 
 #### **Parameters:**
 
-| Name                           | Type   | Default | Description                                                                                                 |
-|--------------------------------|--------|---------|-------------------------------------------------------------------------------------------------------------|
-| **data** <RequiredLabel/>      | string |         | String to hash                                                                                              |
+| Name                      | Type                         | Default | Description                                                      |
+|---------------------------|------------------------------|---------|------------------------------------------------------------------|
+| **data** <RequiredLabel/> | string \| Buffer             |         | Buffer or string to hash                                         |
+| **options**               | [GenericOptions](#options-2) | `{}`    | Optional configuration object for input data encoding and output |
+
+#### **Options:**
+
+| Name              | Type             | Default | Description                                                       |
+|-------------------|------------------|---------|-------------------------------------------------------------------|
+| inputDataEncoding | `BufferEncoding` |         | Specifies the encoding of the input data (e.g., 'hex', 'base64'). |
 
 #### **Outputs:**
 
@@ -129,7 +160,12 @@ As output, it will return a [Buffer][1] `<Buffer cc 2b.....cd a1 08>`
 async secureHashUserPasswrd(
   plainPassword: string,
 ): string {
-  const hashedPassword = this.cryptographyService.createSecureHash(plainPassword);
+  const hashedPassword = this.cryptographyService.createSecureHash(
+      plainPassword,
+      {
+        inputDataEncoding: 'utf-8',
+      }
+    );
   return hashedPassword.toString('hex')
 }
 ```
@@ -150,17 +186,25 @@ Remember that the previous hash must have been generated using [`createSecureHas
 
 ```typescript
 public verifySecureHash (
-  data: string,
-  oldHash: string | Buffer
+  data: string | Buffer,
+  oldHash: string | Buffer,
+  options?: GenericOptionsInterface,
 ): boolean;
 ```
 
 #### **Parameters:**
 
-| Name                         | Type             | Default | Description                           |
-|------------------------------|------------------|---------|---------------------------------------|
-| **data** <RequiredLabel/>    | string           |         | String to hash                        |
-| **oldHash** <RequiredLabel/> | Buffer \| string |         | Buffer or string of the existing hash |
+| Name                         | Type                         | Default | Description                                                      |
+|------------------------------|------------------------------|---------|------------------------------------------------------------------|
+| **data** <RequiredLabel/>    | Buffer \| string             |         | Buffer or string to hash                                         |
+| **oldHash** <RequiredLabel/> | Buffer \| string             |         | Buffer or string of the existing hash                            |
+| **options**                  | [GenericOptions](#options-3) | `{}`    | Optional configuration object for input data encoding and output |
+
+#### **Options:**
+
+| Name              | Type             | Default | Description                                                       |
+|-------------------|------------------|---------|-------------------------------------------------------------------|
+| inputDataEncoding | `BufferEncoding` |         | Specifies the encoding of the input data (e.g., 'hex', 'base64'). |
 
 #### **Outputs:**
 
@@ -174,8 +218,13 @@ async checkUserPassword(
   plainPassword: string,
   hashedPassword: string,
 ): boolean {
-  const bufferExistingHash = Buffer.from(hashedPassword, 'utf-8');
-  return this.cryptographyService.verifySecureHash(plainPassword, bufferExistingHash);
+  const bufferExistingHash = Buffer.from(hashedPassword, 'hex');
+  const bufferPlainPassword = Buffer.from(plainPassword, 'utf-8');
+
+  return this.cryptographyService.verifySecureHash(
+    bufferPlainPassword,
+    bufferExistingHash
+  );
 }
 ```
 
@@ -197,15 +246,23 @@ This method should not be used if you want to guarantee good security.
 
 ```typescript
 public createInsecureFastHash (
-  data: string
+  data: string | Buffer,
+  options?: GenericOptionsInterface,
 ): Buffer;
 ```
 
 #### **Parameters:**
 
-| Name                         | Type             | Default | Description                           |
-|------------------------------|------------------|---------|---------------------------------------|
-| **data** <RequiredLabel/>    | string           |         | String to hash                        |
+| Name                      | Type                         | Default | Description                                                      |
+|---------------------------|------------------------------|---------|------------------------------------------------------------------|
+| **data** <RequiredLabel/> | string \| Buffer             |         | Buffer or string to hash                                         |
+| **options**               | [GenericOptions](#options-4) | `{}`    | Optional configuration object for input data encoding and output |
+
+#### **Options:**
+
+| Name              | Type             | Default | Description                                                       |
+|-------------------|------------------|---------|-------------------------------------------------------------------|
+| inputDataEncoding | `BufferEncoding` |         | Specifies the encoding of the input data (e.g., 'hex', 'base64'). |
 
 #### **Outputs:**
 
@@ -214,7 +271,12 @@ As output, it will return a [Buffer][1] `<Buffer cc 2b.....cd a1 08>`
 #### **Usage:**
 ```typescript
 async exampleFastHashSHA1(): string {
-  const sha1Hash = this.cryptographyService.createInsecureFastHash('this is not a secret');
+  const sha1Hash = this.cryptographyService.createInsecureFastHash(
+    'this is not a secret',
+    {
+      inputDataEncoding: 'utf-8',
+    }
+  );
   return sha1Hash.toString('base64')
 }
 ```
