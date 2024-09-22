@@ -6,6 +6,8 @@ description: Methods to securely encrypt data (AES-256-GCM)
 ---
 
 import RequiredLabel from '@site/src/components/RequiredLabel';
+import RecommendedLabel from '@site/src/components/RecommendedLabel';
+import GenericLabel from '@site/src/components/GenericLabel';
 import Tips from '@site/src/common/tips.mdx'
 import TimingAttack from '@site/src/common/timing-attack.mdx'
 
@@ -18,38 +20,61 @@ providing an additional layer of security for sensitive operations.
 Following these principles ensures that your symmetric encryption implementations remain secure and resilient against common cryptographic attacks.
 
 
-## Symmetric secure data encrypt
+## Symmetric secure data encrypt <RecommendedLabel />
 
 Method to encrypt data using AES-256-GCM with a randomly generated Data Encryption Key (DEK).
-It ensures security by generating unique IVs and salts, securely deriving encryption keys,
+It ensures security by generating unique IVs and salts using the [`createSafeRandomData`][4], securely deriving encryption keys,
 and encrypting the DEK using a master key.
-The final output is a concatenation of the encrypted DEK and the encrypted data, ensuring both confidentiality and key encapsulation.
+The final output is a concatenation of the encrypted DEK and the encrypted data,
+ensuring both confidentiality and key encapsulation.
 
 ### `symmetricSecureDataEncrypt`
 
 ```typescript
 public symmetricSecureDataEncrypt (
   data: string | Buffer,
+  options?: GenericOptionsInterface,
 ): Promise<Buffer>;
 ```
 
 **Parameters:**
 
-| Name                      | Type             | Default | Description                 |
-|---------------------------|------------------|---------|-----------------------------|
-| **data** <RequiredLabel/> | string \| Buffer |         | String or buffer to encrypt |
+| Name                      | Type                       | Default | Description                                                      |
+|---------------------------|----------------------------|---------|------------------------------------------------------------------|
+| **data** <RequiredLabel/> | string \| Buffer           |         | String or buffer to encrypt                                      |
+| **options**               | [GenericOptions](#options) | `{}`    | Optional configuration object for input data encoding and output |
+
+#### **Options:**
+
+| Name              | Type                  | Default | Description                                                       |
+|-------------------|-----------------------|---------|-------------------------------------------------------------------|
+| inputDataEncoding | [`BufferEncoding`][3] |         | Specifies the encoding of the input data (e.g., 'hex', 'base64'). |
 
 **Outputs:**
 
 As output, it will return a [Buffer][1] `<Buffer cc 2b.....cd a1 08>`
+
+:::info
+
+The resulting buffer contains: `[CIPHERED_DEK + CIPHERED_DATA]`
+ - And **CIPHERED_DEK** buffer part contains: `[IV + SALT + AUTH_TAG + CIPHERED_DATA]`
+ - And **CIPHERED_DATA** buffer part contains: `[IV + SALT + AUTH_TAG + CIPHERED_DATA]`
+
+[Click here to see more in deep how it works][6]
+
+:::
 
 #### **Usage:**
 ```typescript
 async exampleEncrypt(
   data: string,
 ): Promise<string> {
-  const bufferData = Buffer.from(data, 'utf-8');
-  const encryptedData = await this.cryptographyService.symmetricSecureDataEncrypt(data);
+  const encryptedData = await this.cryptographyService.symmetricSecureDataEncrypt(
+      data,
+      {
+        inputDataEncoding: 'utf-8',
+      },
+    );
   return encryptedData.toString('hex')
 }
 ```
@@ -58,7 +83,7 @@ async exampleEncrypt(
 [//]: #--------------------#
 
 
-## Symmetric secure data encrypt
+## Symmetric secure data decrypt <RecommendedLabel />
 
 Method to decrypt data that was encrypted using the method [`symmetricSecureDataEncrypt`][2]
 
@@ -71,15 +96,22 @@ Remember that the previous data must have been encrypted using [`symmetricSecure
 
 ```typescript
 public symmetricSecureDataDecrypt (
-  ata: string | Buffer
+  data: string | Buffer
 ): Promise<Buffer>;
 ```
 
 **Parameters:**
 
-| Name                      | Type             | Default | Description                 |
-|---------------------------|------------------|---------|-----------------------------|
-| **data** <RequiredLabel/> | string \| Buffer |         | String or buffer to decrypt |
+| Name                      | Type                         | Default | Description                                                      |
+|---------------------------|------------------------------|---------|------------------------------------------------------------------|
+| **data** <RequiredLabel/> | string \| Buffer             |         | String or buffer to decrypt                                      |
+| **options**               | [GenericOptions](#options-1) | `{}`    | Optional configuration object for input data encoding and output |
+
+#### **Options:**
+
+| Name              | Type                  | Default | Description                                                       |
+|-------------------|-----------------------|---------|-------------------------------------------------------------------|
+| inputDataEncoding | [`BufferEncoding`][3] |         | Specifies the encoding of the input data (e.g., 'hex', 'base64'). |
 
 **Outputs:**
 
@@ -91,12 +123,131 @@ As output, it will return a [Buffer][1] `<Buffer cc 2b.....cd a1 08>`
 async exampleDecrypt(
   data: string,
 ): Promise<string> {
-  const bufferData = Buffer.from(data, 'hex');
-  const decryptedData = await this.cryptographyService.symmetricSecureDataDecrypt(data);
+  const decryptedData = await this.cryptographyService.symmetricSecureDataDecrypt(
+      data,
+      {
+        inputDataEncoding: 'hex',
+      },
+    );
   return decryptedData.toString('utf-8')
 }
 ```
 
+
+[//]: #--------------------#
+
+
+## Symmetric data encrypt <GenericLabel />
+
+Method to encrypt data using AES-256-GCM and using unique IVs and salts using the [`createSafeRandomData`][4],
+and deriving the encryption key using Argon2 KDF.
+
+This is the internal method used to encrypt the data and the DEK when using [`symmetricSecureDataEncrypt`](#symmetricsecuredataencrypt)
+
+### `symmetricDataEncrypt`
+
+```typescript
+public symmetricDataEncrypt (
+  data: string | Buffer,
+  key: string | Buffer,
+  options?: GenericOptionsInterface,
+): Promise<Buffer>;
+```
+
+**Parameters:**
+
+| Name                      | Type                         | Default | Description                                                      |
+|---------------------------|------------------------------|---------|------------------------------------------------------------------|
+| **data** <RequiredLabel/> | string \| Buffer             |         | String or buffer to encrypt                                      |
+| **key** <RequiredLabel/>  | string \| Buffer             |         | String or buffer of the key to use                               |
+| **options**               | [GenericOptions](#options-2) | `{}`    | Optional configuration object for input data encoding and output |
+
+#### **Options:**
+
+| Name              | Type                  | Default | Description                                                       |
+|-------------------|-----------------------|---------|-------------------------------------------------------------------|
+| inputDataEncoding | [`BufferEncoding`][3] |         | Specifies the encoding of the input data (e.g., 'hex', 'base64'). |
+| inputKeyEncoding  | [`BufferEncoding`][3] |         | Specifies the encoding of the input key (e.g., 'hex', 'base64').  |
+
+**Outputs:**
+
+As output, it will return a [Buffer][1] `<Buffer cc 2b.....cd a1 08>`
+
+:::info
+
+The resulting buffer contains: `[IV + SALT + AUTH_TAG + CIPHERED_DATA]`
+
+:::
+
+#### **Usage:**
+```typescript
+async exampleEncrypt(
+  data: string,
+): Promise<string> {
+  const encryptedData = await this.cryptographyService.symmetricDataEncrypt(
+      data,
+      'secret_key',
+      {
+        inputDataEncoding: 'utf-8',
+        inputKeyEncoding: 'utf-8'
+      },
+    );
+  return encryptedData.toString('hex')
+}
+```
+
+
+[//]: #--------------------#
+
+
+## Symmetric data decrypt <GenericLabel />
+
+Method to decrypt data that was encrypted using the method [`symmetricDataEncrypt`][5]
+
+### `symmetricDataDecrypt`
+
+```typescript
+public symmetricDataDecrypt (
+  data: string | Buffer,
+  key: string | Buffer,
+  options?: GenericOptionsInterface,
+): Promise<Buffer>;
+```
+
+**Parameters:**
+
+| Name                      | Type                         | Default | Description                                                      |
+|---------------------------|------------------------------|---------|------------------------------------------------------------------|
+| **data** <RequiredLabel/> | string \| Buffer             |         | String or buffer to decrypt                                      |
+| **key** <RequiredLabel/>  | string \| Buffer             |         | String or buffer of the key to use                               |
+| **options**               | [GenericOptions](#options-3) | `{}`    | Optional configuration object for input data encoding and output |
+
+#### **Options:**
+
+| Name              | Type                  | Default | Description                                                       |
+|-------------------|-----------------------|---------|-------------------------------------------------------------------|
+| inputDataEncoding | [`BufferEncoding`][3] |         | Specifies the encoding of the input data (e.g., 'hex', 'base64'). |
+
+**Outputs:**
+
+As output, it will return a [Buffer][1] `<Buffer cc 2b.....cd a1 08>`
+
+#### **Usage:**
+```typescript
+async exampleDecrypt(
+  data: string,
+): Promise<string> {
+  const decryptedData = await this.cryptographyService.symmetricDataDecrypt(
+      data,
+      'secret_key'
+      {
+        inputDataEncoding: 'hex',
+        inputKeyEncoding: 'utf-8',
+      },
+    );
+  return decryptedData.toString('utf-8')
+}
+```
 
 <Tips />
 
@@ -104,4 +255,8 @@ async exampleDecrypt(
 
 
 [1]: https://nodejs.org/api/buffer.html
-[2]: symmetric-encryption#symmetricsecuredataencrypt
+[2]: #symmetricsecuredataencrypt
+[3]: https://nodejs.org/api/buffer.html#buffers-and-character-encodings
+[4]: generics#generate-secure-random-data
+[5]: #symmetricdataencrypt
+[6]: .../internals/symmetric-secure-data-encrypt
