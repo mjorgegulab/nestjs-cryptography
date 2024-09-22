@@ -25,18 +25,27 @@ Method to create a hmac of a text where you could choose the desired digest algo
 ```typescript
 public createCustomHmac (
   algorithm: string,
-  key: Buffer,
-  data: string,
+  key: string | Buffer,
+  data: string | Buffer,
+  options?: GenericOptionsInterface,
 ): Buffer;
 ```
 
 **Parameters:**
 
-| Name                           | Type   | Default | Description                                            |
-|--------------------------------|--------|---------|--------------------------------------------------------|
-| **algorithm** <RequiredLabel/> | string |         | Digest algorithm to use (`sha1, sha256, sha3-256,...`) |
-| **key** <RequiredLabel/>       | Buffer |         | Secret key to use on the hmac                          |
-| **data** <RequiredLabel/>      | string |         | String to hmac                                         |
+| Name                           | Type                       | Default | Description                                                      |
+|--------------------------------|----------------------------|---------|------------------------------------------------------------------|
+| **algorithm** <RequiredLabel/> | string                     |         | Digest algorithm to use (`sha1, sha256, sha3-256,...`)           |
+| **key** <RequiredLabel/>       | string \| Buffer           |         | Secret key to use on the hmac                                    |
+| **data** <RequiredLabel/>      | string \| Buffer           |         | String or buffer to hmac                                         |
+| **options**                    | [GenericOptions](#options) | `{}`    | Optional configuration object for input data encoding and output |
+
+#### **Options:**
+
+| Name              | Type                  | Default | Description                                                       |
+|-------------------|-----------------------|---------|-------------------------------------------------------------------|
+| inputDataEncoding | [`BufferEncoding`][3] |         | Specifies the encoding of the input data (e.g., 'hex', 'base64'). |
+| inputKeyEncoding  | [`BufferEncoding`][3] |         | Specifies the encoding of the input key (e.g., 'hex', 'base64').  |
 
 **Outputs:**
 
@@ -47,8 +56,15 @@ As output, it will return a [Buffer][1] `<Buffer cc 2b.....cd a1 08>`
 async exampleHmac(
   data: string,
 ): string {
-  const key = this.cryptographyService.generateSymmetricKey(128);
-  const hmacResult = this.cryptographyService.createCustomHmac('sha-512', key, data);
+  const hmacResult = this.cryptographyService.createCustomHmac(
+      'sha512',
+      'strong_key',
+      'test',
+      {
+        inputDataEncoding: 'utf-8',
+        inputKeyEncoding: 'utf-8',
+      }
+    );
   return hmacResult.toString('hex')
 }
 ```
@@ -67,20 +83,29 @@ You need choose the existing hmac algorithm type used `sha1, sha256, sha3-256,..
 ```typescript
 public verifyCustomHmac (
   algorithm: string,
-  key: Buffer,
-  data: string,
+  key: string | Buffer,
+  data: string | Buffer,
   oldHmac: string | Buffer,
+  options?: GenericOptionsInterface,
 ): boolean;
 ```
 
 **Parameters:**
 
-| Name                           | Type             | Default | Description                                            |
-|--------------------------------|------------------|---------|--------------------------------------------------------|
-| **algorithm** <RequiredLabel/> | string           |         | Digest algorithm to use (`sha1, sha256, sha3-256,...`) |
-| **key** <RequiredLabel/>       | Buffer           |         | Secret key to use on the hmac                          |
-| **data** <RequiredLabel/>      | string           |         | String to hmac                                         |
-| **oldHmac** <RequiredLabel/>   | string \| Buffer |         | Buffer or string of the existing hmac                  |
+| Name                           | Type                       | Default | Description                                                      |
+|--------------------------------|----------------------------|---------|------------------------------------------------------------------|
+| **algorithm** <RequiredLabel/> | string                     |         | Digest algorithm to use (`sha1, sha256, sha3-256,...`)           |
+| **key** <RequiredLabel/>       | string \| Buffer           |         | Secret key to use on the hmac                                    |
+| **data** <RequiredLabel/>      | string \| Buffer           |         | String or buffer to hmac                                         |
+| **oldHmac** <RequiredLabel/>   | string \| Buffer           |         | String or buffer of the existing hmac                            |
+| **options**                    | [GenericOptions](#options) | `{}`    | Optional configuration object for input data encoding and output |
+
+#### **Options:**
+
+| Name              | Type                  | Default | Description                                                       |
+|-------------------|-----------------------|---------|-------------------------------------------------------------------|
+| inputDataEncoding | [`BufferEncoding`][3] |         | Specifies the encoding of the input data (e.g., 'hex', 'base64'). |
+| inputKeyEncoding  | [`BufferEncoding`][3] |         | Specifies the encoding of the input key (e.g., 'hex', 'base64').  |
 
 **Outputs:**
 
@@ -96,8 +121,16 @@ async checkHmac(
   data: string,
 ): boolean {
   const bufferExistingHmac = Buffer.from(existingHmac, 'hex');
-  const bufferOldKey = Buffer.from(oldKey, 'hex');
-  return this.cryptographyService.verifyCustomHmac('sha-512', bufferOldKey, data, bufferExistingHmac);
+  return this.cryptographyService.verifyCustomHmac(
+      'sha512',
+      oldKey,
+      data,
+      bufferExistingHmac,
+      {
+        inputDataEncoding: 'utf-8',
+        inputKeyEncoding: 'hex',
+      },
+    );
 }
 ```
 
@@ -115,15 +148,23 @@ In this case the `sha3-256` digest algorithm will be used.
 
 ```typescript
 public createSecureHmac (
-  data: string
+  data: string | Buffer,
+  options?: GenericOptionsInterface,
 ): Buffer;
 ```
 
 **Parameters:**
 
-| Name                           | Type   | Default | Description                                                                                                 |
-|--------------------------------|--------|---------|-------------------------------------------------------------------------------------------------------------|
-| **data** <RequiredLabel/>      | string |         | String to hmac                                                                                              |
+| Name                      | Type                       | Default | Description                                                      |
+|---------------------------|----------------------------|---------|------------------------------------------------------------------|
+| **data** <RequiredLabel/> | string \| Buffer           |         | String or buffer to hmac                                         |
+| **options**               | [GenericOptions](#options) | `{}`    | Optional configuration object for input data encoding and output |
+
+#### **Options:**
+
+| Name              | Type                  | Default | Description                                                       |
+|-------------------|-----------------------|---------|-------------------------------------------------------------------|
+| inputDataEncoding | [`BufferEncoding`][3] |         | Specifies the encoding of the input data (e.g., 'hex', 'base64'). |
 
 **Outputs:**
 
@@ -134,7 +175,12 @@ As output, it will return a [Buffer][1] `<Buffer cc 2b.....cd a1 08>`
 async exampleSecureHmac(
   data: string,
 ): string {
-  const hmacResult = this.cryptographyService.createSecureHmac(data);
+  const hmacResult = this.cryptographyService.createSecureHmac(
+      data,
+      {
+        inputDataEncoding: 'utf-8',
+      },
+    );
   return hmacResult.toString('hex')
 }
 ```
@@ -155,17 +201,25 @@ Remember that the previous hmac must have been generated using [`createSecureHma
 
 ```typescript
 public verifySecureHmac (
-  data: string,
-  oldHmac: string | Buffer
+  data: string | Buffer,
+  oldHmac: string | Buffer,
+  options?: GenericOptionsInterface,
 ): boolean;
 ```
 
 **Parameters:**
 
-| Name                         | Type             | Default | Description                           |
-|------------------------------|------------------|---------|---------------------------------------|
-| **data** <RequiredLabel/>    | string           |         | String to hmac                        |
-| **oldHmac** <RequiredLabel/> | Buffer \| string |         | Buffer or string of the existing hmac |
+| Name                         | Type                       | Default | Description                                                      |
+|------------------------------|----------------------------|---------|------------------------------------------------------------------|
+| **data** <RequiredLabel/>    | string \| Buffer           |         | String or buffer to hmac                                         |
+| **oldHmac** <RequiredLabel/> | string \| Buffer           |         | String or buffer of the existing hmac                            |
+| **options**                  | [GenericOptions](#options) | `{}`    | Optional configuration object for input data encoding and output |
+
+#### **Options:**
+
+| Name              | Type                  | Default | Description                                                       |
+|-------------------|-----------------------|---------|-------------------------------------------------------------------|
+| inputDataEncoding | [`BufferEncoding`][3] |         | Specifies the encoding of the input data (e.g., 'hex', 'base64'). |
 
 **Outputs:**
 
@@ -180,7 +234,13 @@ async exampleVerifySecureHmac(
   existingHmac: string,
 ): boolean {
   const bufferExistingHmac = Buffer.from(existingHmac, 'hex');
-  return this.cryptographyService.verifySecureHmac(data, bufferExistingHmac);
+  return this.cryptographyService.verifySecureHmac(
+    data,
+    bufferExistingHmac,
+    {
+      inputDataEncoding: 'utf-8',
+    },
+  );
 }
 ```
 
@@ -196,3 +256,4 @@ async exampleVerifySecureHmac(
 
 [1]: https://nodejs.org/api/buffer.html
 [2]: https://en.wikipedia.org/wiki/HMAC
+[3]: https://nodejs.org/api/buffer.html#buffers-and-character-encodings
