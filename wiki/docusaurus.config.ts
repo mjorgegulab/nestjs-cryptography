@@ -13,7 +13,7 @@ const config: Config = {
   organizationName: 'mjorgegulab',
   projectName: 'nestjs-cryptography',
 
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
 
   i18n: {

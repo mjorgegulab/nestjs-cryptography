@@ -49,6 +49,7 @@ public deriveMasterKey (
 #### **Module Parameters:**
 
 :::info
+
 Internally, this method uses certain parameters that are defined at the module level during initialization,
 as we have seen [previously][2]. The internal parameters used and their corresponding configuration keys are as follows:
 
@@ -64,6 +65,7 @@ This value is determined by [`kdf.memoryCost`][5] and plays a critical role in r
 
   - **timeCost**: Specifies the number of iterations or the amount of computational work Argon2 will perform.
 It is defined via [`kdf.timeCost`][6] to ensure a balance between security and performance.
+
 :::
 
 
