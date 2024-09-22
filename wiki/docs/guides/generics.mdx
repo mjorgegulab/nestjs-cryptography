@@ -45,15 +45,13 @@ async someAwesomeMethod(): Promise<string> {
 
 ## Generate random password
 
-Method to generate a random password with this set of characters:
-`a-z 0-9` if _**hex**_ used, or `A-Z a-z 0-9 + = /` if _**base64**_ used.
+Method to generate a random password with this set of characters: `A-Z a-z 0-9 + = /`.
 
 ### `genRandomPassword`
 
 ```tsx
 public genRandomPassword (
-  length: number,
-  encoding: 'base64' | 'hex'
+  length: number
 ): string;
 ```
 
@@ -62,19 +60,16 @@ public genRandomPassword (
 | Name                      | Type          | Default | Description                                      |
 |---------------------------|---------------|---------|--------------------------------------------------|
 | length <RequiredLabel/>   | number        |         | The password output length                       |
-| encoding <RequiredLabel/> | base64 \| hex |         | The password output format hexadecimal or base64 |
 
 
 **Outputs:**
 
-As output, it will return a string of this format:
-  - base64: `jh2EducrV7yH8tGAc8Jkdcso`
-  - hex: `b4da8e4aba39c9f70dde717d`
+As output, it will return a string of this format: `jh2EducrV7yH8tGAc8Jkdcso`
 
 **Usage:**
 ```typescript
 async createUserPassword(): Promise<string> {
-  const newPassword = this.cryptographyService.genRandomPassword(24, 'base64');
+  const newPassword = this.cryptographyService.genRandomPassword(24);
   ...
   return newPassword;
 }
@@ -105,7 +100,7 @@ public generateSymmetricKey (
 As output, it will return an object of type [KeyObject][1].
 
 :::info
- If you want to export this KeyObject to different types, you can access the `.export` [method][2]
+ If you want to export this KeyObject to different types, you can access the [`.export` method.][2]
 :::
 
 **Usage:**
