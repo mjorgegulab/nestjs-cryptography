@@ -6,6 +6,8 @@ description: Methods to create generic and secure HMACs
 ---
 
 import RequiredLabel from '@site/src/components/RequiredLabel';
+import RecommendedLabel from '@site/src/components/RecommendedLabel';
+import GenericLabel from '@site/src/components/GenericLabel';
 import Tips from '@site/src/common/tips.mdx'
 import TimingAttack from '@site/src/common/timing-attack.mdx'
 
@@ -16,7 +18,7 @@ Additionally, we will explore secure techniques for comparing hmac values,
 focusing on the use of time-safe comparison functions to prevent timing attacks.
 These methods are crucial for ensuring the integrity and security of sensitive data in cryptographic operations.
 
-## Create a custom HMAC
+## Create a custom HMAC <GenericLabel />
 
 Method to create a hmac of a text where you could choose the desired digest algorithm to use `sha1, sha256, sha3-256,...`
 
@@ -73,7 +75,7 @@ async exampleHmac(
 [//]: #--------------------#
 
 
-## Verify a custom HMAC
+## Verify a custom HMAC <GenericLabel />
 
 Method to verify if an existing hmac matches the hmac of the desired text.
 You need choose the existing hmac algorithm type used `sha1, sha256, sha3-256,...`
@@ -92,13 +94,13 @@ public verifyCustomHmac (
 
 **Parameters:**
 
-| Name                           | Type                       | Default | Description                                                      |
-|--------------------------------|----------------------------|---------|------------------------------------------------------------------|
-| **algorithm** <RequiredLabel/> | string                     |         | Digest algorithm to use (`sha1, sha256, sha3-256,...`)           |
-| **key** <RequiredLabel/>       | string \| Buffer           |         | Secret key to use on the hmac                                    |
-| **data** <RequiredLabel/>      | string \| Buffer           |         | String or buffer to hmac                                         |
-| **oldHmac** <RequiredLabel/>   | string \| Buffer           |         | String or buffer of the existing hmac                            |
-| **options**                    | [GenericOptions](#options) | `{}`    | Optional configuration object for input data encoding and output |
+| Name                           | Type                         | Default | Description                                                      |
+|--------------------------------|------------------------------|---------|------------------------------------------------------------------|
+| **algorithm** <RequiredLabel/> | string                       |         | Digest algorithm to use (`sha1, sha256, sha3-256,...`)           |
+| **key** <RequiredLabel/>       | string \| Buffer             |         | Secret key to use on the hmac                                    |
+| **data** <RequiredLabel/>      | string \| Buffer             |         | String or buffer to hmac                                         |
+| **oldHmac** <RequiredLabel/>   | string \| Buffer             |         | String or buffer of the existing hmac                            |
+| **options**                    | [GenericOptions](#options-1) | `{}`    | Optional configuration object for input data encoding and output |
 
 #### **Options:**
 
@@ -138,7 +140,7 @@ async checkHmac(
 [//]: #--------------------#
 
 
-## Create a secure HMAC
+## Create a secure HMAC <RecommendedLabel />
 
 Method to create an extra secure hmac of a text.
 
@@ -155,10 +157,10 @@ public createSecureHmac (
 
 **Parameters:**
 
-| Name                      | Type                       | Default | Description                                                      |
-|---------------------------|----------------------------|---------|------------------------------------------------------------------|
-| **data** <RequiredLabel/> | string \| Buffer           |         | String or buffer to hmac                                         |
-| **options**               | [GenericOptions](#options) | `{}`    | Optional configuration object for input data encoding and output |
+| Name                      | Type                         | Default | Description                                                      |
+|---------------------------|------------------------------|---------|------------------------------------------------------------------|
+| **data** <RequiredLabel/> | string \| Buffer             |         | String or buffer to hmac                                         |
+| **options**               | [GenericOptions](#options-2) | `{}`    | Optional configuration object for input data encoding and output |
 
 #### **Options:**
 
@@ -189,7 +191,7 @@ async exampleSecureHmac(
 [//]: #--------------------#
 
 
-## Verify a secure HMAC
+## Verify a secure HMAC <RecommendedLabel />
 
 Method to verify if an existing hmac matches the hmac of the desired text.
 :::warning
@@ -209,11 +211,11 @@ public verifySecureHmac (
 
 **Parameters:**
 
-| Name                         | Type                       | Default | Description                                                      |
-|------------------------------|----------------------------|---------|------------------------------------------------------------------|
-| **data** <RequiredLabel/>    | string \| Buffer           |         | String or buffer to hmac                                         |
-| **oldHmac** <RequiredLabel/> | string \| Buffer           |         | String or buffer of the existing hmac                            |
-| **options**                  | [GenericOptions](#options) | `{}`    | Optional configuration object for input data encoding and output |
+| Name                         | Type                         | Default | Description                                                      |
+|------------------------------|------------------------------|---------|------------------------------------------------------------------|
+| **data** <RequiredLabel/>    | string \| Buffer             |         | String or buffer to hmac                                         |
+| **oldHmac** <RequiredLabel/> | string \| Buffer             |         | String or buffer of the existing hmac                            |
+| **options**                  | [GenericOptions](#options-3) | `{}`    | Optional configuration object for input data encoding and output |
 
 #### **Options:**
 
