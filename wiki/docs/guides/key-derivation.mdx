@@ -39,11 +39,11 @@ public deriveMasterKey (
 
 #### **Parameters:**
 
-| Name                           | Type    | Default | Description                                         |
-|--------------------------------|---------|---------|-----------------------------------------------------|
-| **masterKey** <RequiredLabel/> | boolean | false   | MasterKey of password to derive                     |
-| **salt** <RequiredLabel/>      | Buffer  | false   | Salt to increase the security of the key derivation |
-| **length** <RequiredLabel/>    | number  | false   | The desired derived output key length               |
+| Name                           | Type    | Default                    | Description                                         |
+|--------------------------------|---------|----------------------------|-----------------------------------------------------|
+| **masterKey** <RequiredLabel/> | boolean | false                      | MasterKey of password to derive                     |
+| **salt** <RequiredLabel/>      | Buffer  | false                      | Salt to increase the security of the key derivation |
+| **length**                     | number  | [`kdf.outputKeyLength`][3] | The desired derived output key length               |
 
 
 #### **Module Parameters:**
@@ -53,7 +53,8 @@ Internally, this method uses certain parameters that are defined at the module l
 as we have seen [previously][2]. The internal parameters used and their corresponding configuration keys are as follows:
 
   - **hashLength**: Specifies the length of the resulting derived key.
-      This is set via [`kdf.outputKeyLength`][3] and determines the size of the final hash in bytes.
+      If this option is not provided, then it is set via [`kdf.outputKeyLength`][3]
+and determines the size of the final hash in bytes.
 
   - **type**: Defines the variant of Argon2 to use (_argon2i_, _argon2d_, or _argon2id_).
 This is configured using [`kdf.argon2Type`][4].
