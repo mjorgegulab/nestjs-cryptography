@@ -1,7 +1,8 @@
 ---
 title: Symmetric Secure Data Encrypt
 sidebar_label: Symmetric Secure Data Encrypt
-sidebar_position: 2
+sidebar_position: 3
+description: Internals of symmetricSecureDataEncrypt
 ---
 
 In the following section, you will see a diagram of the cryptographic operations performed when calling the method [`symmetricSecureDataEncrypt`][1]
@@ -141,7 +142,7 @@ it concatenates the encrypted DEK and the encrypted data, returning the complete
 
 ## **Explanation of the Diagram**
 1) Generate DEK:
-    - The internal `createSaferRandomData` method generates a 32-byte **DEK** (Data Encryption Key) using `HKDF(sha3-256 + random_key + random_salt)`.
+    - The `createSafeRandomData` method generates a 32-byte **DEK** (Data Encryption Key) using `HKDF(sha3-256 + random_key + random_salt)`.
 2) Encrypt the Input Data:
     - **Generate IV (12 bytes)**: A 12-byte IV is generated using `HKDF(sha3-256 + random_key + random_salt)`.
     - **Generate Salt (64 bytes)**: A 64-byte salt is generated, also using `HKDF(sha3-256 + random_key + random_salt)`.
