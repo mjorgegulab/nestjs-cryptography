@@ -132,6 +132,11 @@ const config: Config = {
     mermaid: {
       theme: { dark: 'neutral' },
     },
+    algolia: {
+      appId: 'YT6SK20KML',
+      apiKey: 'b7d1590ceb140d194651377372804c8b',
+      indexName: 'nestjs-cryptography',
+    },
   } satisfies Preset.ThemeConfig,
 };
 
