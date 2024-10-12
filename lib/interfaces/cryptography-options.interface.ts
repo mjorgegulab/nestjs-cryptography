@@ -4,27 +4,34 @@ export enum Argon2Type {
   argon2id = 2,
 }
 
-export interface CryptographyOptionsInterface {
-  kdf: {
+export interface CryptographyKdfOptions {
+  outputKeyLength: number;
+  argon2Type: Argon2Type;
+  memoryCost: number;
+  timeCost: number;
+}
+
+export interface CryptographyHashingOptions {
+  password: {
     outputKeyLength: number;
     argon2Type: Argon2Type;
     memoryCost: number;
     timeCost: number;
   };
-  hashing: {
-    password: {
-      outputKeyLength: number;
-      argon2Type: Argon2Type;
-      memoryCost: number;
-      timeCost: number;
-    };
-    hmac: {
-      masterKey: string;
-    };
+  hmac: {
+    masterKey: string;
   };
-  encryption: {
-    symmetric: {
-      masterKey: string;
-    };
+}
+
+export interface CryptographyEncryptionOptions {
+  symmetric: {
+    masterKey: string;
   };
+}
+
+export interface CryptographyOptionsInterface {
+  useDefaultValues?: boolean;
+  kdf?: Partial<CryptographyKdfOptions>;
+  hashing?: Partial<CryptographyHashingOptions>;
+  encryption?: Partial<CryptographyEncryptionOptions>;
 }
