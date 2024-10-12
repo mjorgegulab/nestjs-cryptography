@@ -63,6 +63,8 @@
     "@nestjs/core": "^9.0.0 || ^10.0.0"
   },
   "jest": {
+    "testPathIgnorePatterns": ["/node_modules/", "/wiki/"],
+    "modulePathIgnorePatterns": ["/wiki/"],
     "moduleFileExtensions": [
       "js",
       "json",
