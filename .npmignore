@@ -28,5 +28,7 @@ coverage
 
 test
 
+wiki
+
 *.spec.*
 *.test.*
