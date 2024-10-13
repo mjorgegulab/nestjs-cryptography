@@ -47,6 +47,34 @@ describe('CryptographyService', () => {
     service = module.get<CryptographyService>(CryptographyService);
   });
 
+  it('should return error on masterKey not defined', async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        CryptographyService,
+        {
+          provide: MODULE_OPTIONS_TOKEN,
+          useValue: {
+            ...mockCryptographyOptions,
+            hashing: {
+              ...mockCryptographyOptions.hashing,
+              hmac: {
+                masterKey: undefined,
+              },
+            },
+          },
+        },
+      ],
+    }).compile();
+
+    service = module.get<CryptographyService>(CryptographyService);
+
+    expect(() =>
+      service.createSecureHmac('test', {
+        inputDataEncoding: 'utf-8',
+      }),
+    ).toThrow();
+  });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(service).toBeInstanceOf(CryptographyService);
