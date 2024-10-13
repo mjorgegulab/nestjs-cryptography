@@ -288,7 +288,11 @@ export class CryptographyService {
     data: string | Buffer,
     options?: GenericOptionsInterface,
   ): Buffer {
-    const key = Buffer.from(this.options.hashing.hmac.masterKey, 'hex');
+    this.checkModuleOptions('HMAC', {
+      masterKey: this.moduleOptions?.hashing?.hmac?.masterKey,
+    });
+
+    const key = Buffer.from(this.moduleOptions.hashing.hmac.masterKey, 'hex');
 
     const salt = crypto.randomBytes(16);
 
@@ -304,12 +308,17 @@ export class CryptographyService {
     oldHmac: string | Buffer,
     options?: GenericOptionsInterface,
   ): boolean {
-    const key = Buffer.from(this.options.hashing.hmac.masterKey, 'hex');
+    this.checkModuleOptions('HMAC', {
+      masterKey: this.moduleOptions?.hashing?.hmac?.masterKey,
+    });
+
+    const key = Buffer.from(this.moduleOptions.hashing.hmac.masterKey, 'hex');
 
     const buffOldHmac = this.convertInputData(
       oldHmac,
       options?.inputDataEncoding,
     );
+
     const saltOldHmac = this.extractSaltFromHmac(buffOldHmac);
     const hashOldHmac = buffOldHmac.subarray(16, buffOldHmac.length);
 
