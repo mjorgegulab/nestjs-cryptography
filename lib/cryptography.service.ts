@@ -154,13 +154,38 @@ export class CryptographyService {
   public async createArgon2HashFromPassword(
     data: string | Buffer,
   ): Promise<Buffer> {
+    if (!this.moduleOptions?.useDefaultValues) {
+      this.checkModuleOptions('HASHING_PASSWORD', {
+        outputKeyLength: this.moduleOptions?.hashing?.password?.outputKeyLength,
+        argon2Type: this.moduleOptions?.hashing?.password?.argon2Type,
+        memoryCost: this.moduleOptions?.hashing?.password?.memoryCost,
+        timeCost: this.moduleOptions?.hashing?.password?.timeCost,
+      });
+    } else {
+      this.moduleOptions.hashing = {
+        ...this.moduleOptions?.hashing,
+        password: {
+          ...this.moduleOptions.hashing?.password,
+        },
+      };
+      this.moduleOptions.hashing.password.outputKeyLength =
+        DEFAULT_HASHING_CRYPTOGRAPHY_OPTIONS.password.outputKeyLength;
+      this.moduleOptions.hashing.password.argon2Type =
+        DEFAULT_HASHING_CRYPTOGRAPHY_OPTIONS.password.argon2Type;
+      this.moduleOptions.hashing.password.memoryCost =
+        DEFAULT_HASHING_CRYPTOGRAPHY_OPTIONS.password.memoryCost;
+      this.moduleOptions.hashing.password.timeCost =
+        DEFAULT_HASHING_CRYPTOGRAPHY_OPTIONS.password.timeCost;
+    }
+
     const tmpData = await argon2.hash(data, {
-      hashLength: this.options.hashing.password.outputKeyLength,
-      type: this.options.hashing.password.argon2Type,
-      memoryCost: this.options.hashing.password.memoryCost,
-      timeCost: this.options.hashing.password.timeCost,
+      hashLength: this.moduleOptions.hashing.password.outputKeyLength,
+      type: this.moduleOptions.hashing.password.argon2Type,
+      memoryCost: this.moduleOptions.hashing.password.memoryCost,
+      timeCost: this.moduleOptions.hashing.password.timeCost,
       raw: false,
     });
+
     return Buffer.isBuffer(tmpData) ? tmpData : Buffer.from(tmpData);
   }
 
