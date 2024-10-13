@@ -6,12 +6,16 @@ import {
   CryptographyOptionsInterface,
   GenericOptionsInterface,
 } from './interfaces';
+import {
+  DEFAULT_KDF_CRYPTOGRAPHY_OPTIONS,
+  DEFAULT_HASHING_CRYPTOGRAPHY_OPTIONS,
+} from './constants';
 
 @Injectable()
 export class CryptographyService {
   constructor(
     @Inject(MODULE_OPTIONS_TOKEN)
-    private options: CryptographyOptionsInterface,
+    private moduleOptions: CryptographyOptionsInterface,
   ) {}
 
   private convertInputData(
@@ -24,6 +28,20 @@ export class CryptographyService {
       return Buffer.from(data, inputEncoding ?? 'utf8');
     } else {
       throw new Error('Unsupported input type');
+    }
+  }
+
+  private checkModuleOptions(
+    parent: string,
+    options: { [key: string]: any },
+  ): void {
+    for (const option in options) {
+      if (typeof option === 'object') this.checkModuleOptions(parent, option);
+      if (options[option] === undefined || options[option] === null) {
+        throw new Error(
+          `[CryptographyModule] [${parent}] Option ${option} is not defined on the configuration`,
+        );
+      }
     }
   }
 
@@ -98,12 +116,37 @@ export class CryptographyService {
     salt: Buffer,
     length?: number,
   ): Promise<Buffer> {
+    if (!this.moduleOptions?.useDefaultValues) {
+      this.checkModuleOptions('KDF', {
+        ...(!length && {
+          outputKeyLength: this.moduleOptions?.kdf?.outputKeyLength,
+        }),
+        argon2Type: this.moduleOptions?.kdf?.argon2Type,
+        memoryCost: this.moduleOptions?.kdf?.memoryCost,
+        timeCost: this.moduleOptions?.kdf?.timeCost,
+      });
+    } else {
+      this.moduleOptions.kdf = {
+        ...this.moduleOptions?.kdf,
+      };
+      this.moduleOptions.kdf.outputKeyLength =
+        DEFAULT_KDF_CRYPTOGRAPHY_OPTIONS.outputKeyLength;
+      this.moduleOptions.kdf.argon2Type =
+        DEFAULT_KDF_CRYPTOGRAPHY_OPTIONS.argon2Type;
+      this.moduleOptions.kdf.memoryCost =
+        DEFAULT_KDF_CRYPTOGRAPHY_OPTIONS.memoryCost;
+      this.moduleOptions.kdf.timeCost =
+        DEFAULT_KDF_CRYPTOGRAPHY_OPTIONS.timeCost;
+    }
+
+    console.log(this.moduleOptions.kdf);
+
     return await argon2.hash(masterKey, {
-      hashLength: length ?? this.options.kdf.outputKeyLength,
+      hashLength: length ?? this.moduleOptions.kdf.outputKeyLength,
       salt: salt,
-      type: this.options.kdf.argon2Type,
-      memoryCost: this.options.kdf.memoryCost,
-      timeCost: this.options.kdf.timeCost,
+      type: this.moduleOptions.kdf.argon2Type,
+      memoryCost: this.moduleOptions.kdf.memoryCost,
+      timeCost: this.moduleOptions.kdf.timeCost,
       raw: true,
     });
   }
