@@ -395,13 +395,17 @@ export class CryptographyService {
     data: string | Buffer,
     options?: GenericOptionsInterface,
   ): Promise<Buffer> {
+    this.checkModuleOptions('SYMMETRIC_ENCRYPTION', {
+      masterKey: this.moduleOptions?.encryption?.symmetric?.masterKey,
+    });
+
     const dek = this.createSafeRandomData(32);
 
     const cipheredData = await this.symmetricDataEncrypt(data, dek, options);
 
     const cipheredDek = await this.symmetricDataEncrypt(
       dek,
-      this.options.encryption.symmetric.masterKey,
+      this.moduleOptions.encryption.symmetric.masterKey,
     );
 
     return Buffer.concat([cipheredDek, cipheredData]);
@@ -411,6 +415,10 @@ export class CryptographyService {
     data: string | Buffer,
     options?: GenericOptionsInterface,
   ): Promise<Buffer> {
+    this.checkModuleOptions('SYMMETRIC_ENCRYPTION', {
+      masterKey: this.moduleOptions?.encryption?.symmetric?.masterKey,
+    });
+
     const inputData = this.convertInputData(data, options?.inputDataEncoding);
 
     const cipheredDek = this.extractCipheredDEK(inputData);
@@ -419,7 +427,7 @@ export class CryptographyService {
 
     const decipheredDek = await this.symmetricDataDecrypt(
       cipheredDek,
-      this.options.encryption.symmetric.masterKey,
+      this.moduleOptions.encryption.symmetric.masterKey,
     );
 
     return await this.symmetricDataDecrypt(cipheredData, decipheredDek);
