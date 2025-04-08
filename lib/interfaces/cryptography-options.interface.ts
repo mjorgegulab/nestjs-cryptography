@@ -30,6 +30,7 @@ export interface CryptographyEncryptionOptions {
 }
 
 export interface CryptographyOptionsInterface {
+  isGlobal?: boolean;
   useDefaultValues?: boolean;
   kdf?: Partial<CryptographyKdfOptions>;
   hashing?: Partial<CryptographyHashingOptions>;
