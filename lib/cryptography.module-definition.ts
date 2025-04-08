@@ -3,6 +3,7 @@ import { CryptographyOptionsInterface } from './interfaces';
 
 export const { ConfigurableModuleClass, MODULE_OPTIONS_TOKEN } =
   new ConfigurableModuleBuilder<CryptographyOptionsInterface>()
+    .setClassMethodName('forRoot')
     .setExtras(
       {
         isGlobal: true,
