@@ -1,0 +1,9 @@
+exclude_paths:
+  - 'test/**'
+  - 'test/**/*'
+  - 'wiki/**'
+  - 'wiki/**/*'
+  - 'dist/**'
+  - 'dist/**/*'
+  - '.github/**'
+  - '.github/**/*'
