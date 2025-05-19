@@ -27,7 +27,7 @@
     "all": "yarn format && yarn lint && yarn test && yarn prepack"
   },
   "dependencies": {
-    "argon2": "^0.41.1"
+    "argon2": "^0.43.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
